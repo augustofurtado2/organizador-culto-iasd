@@ -34,8 +34,8 @@
     .section-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #9ca3af; text-transform: uppercase; padding: 4px 0 8px; }
     .timeline { display: flex; flex-direction: column; }
 
-    .moment-row { display: flex; align-items: stretch; gap: 0; cursor: pointer; user-select: none; }
-    .timeline-track { display: flex; flex-direction: column; align-items: center; width: 36px; flex-shrink: 0; padding: 0 0 0 10px; }
+    .moment-row { display: flex; align-items: stretch; cursor: pointer; user-select: none; }
+    .timeline-track { display: flex; flex-direction: column; align-items: center; width: 36px; flex-shrink: 0; padding-left: 10px; }
     .tl-dot { width: 14px; height: 14px; border-radius: 50%; background: #d1d5db; border: 2px solid #e5e7eb; flex-shrink: 0; margin-top: 15px; transition: all .2s; }
     .tl-line { width: 2px; flex: 1; background: #e5e7eb; min-height: 12px; }
     .moment-row:last-child .tl-line { display: none; }
@@ -48,35 +48,46 @@
 
     .time-tag { font-size: 12px; font-weight: 700; color: #003366; background: #eff6ff; padding: 4px 10px; border-radius: 8px; min-width: 52px; text-align: center; flex-shrink: 0; }
     .moment-row.checked .time-tag { background: #d1fae5; color: #166534; }
-
     .moment-info { flex: 1; min-width: 0; }
     .moment-label { font-size: 13px; font-weight: 700; color: #001833; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .moment-row.checked .moment-label { color: #166534; text-decoration: line-through; }
-
     .moment-sub { display: flex; align-items: center; gap: 6px; margin-top: 3px; flex-wrap: wrap; }
     .resp-chip  { font-size: 11px; font-weight: 600; color: #6b7280; background: #f3f4f6; padding: 2px 8px; border-radius: 6px; }
     .music-chip { font-size: 11px; font-weight: 600; color: #003366; background: #dbeafe; padding: 2px 8px; border-radius: 6px; }
-    .note-chip  { font-size: 11px; color: #92400e; background: #fef3c7; padding: 2px 8px; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
-
+    .note-chip  { font-size: 11px; color: #92400e; background: #fef3c7; padding: 2px 8px; border-radius: 6px; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .check-icon { font-size: 20px; flex-shrink: 0; width: 28px; text-align: center; color: #d1d5db; transition: all .2s; }
     .moment-row.checked .check-icon { color: #22c55e; }
 
-    /* Setup overlay */
-    .setup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 24px; }
-    .setup-overlay.open { display: flex; }
-    .setup-box { background: white; border-radius: 20px; padding: 28px; width: 100%; max-width: 360px; box-shadow: 0 20px 60px rgba(0,51,102,.25); }
-    .setup-box h2 { font-size: 17px; font-weight: 800; color: #003366; margin-bottom: 6px; }
-    .setup-box p  { font-size: 13px; color: #6b7280; margin-bottom: 20px; line-height: 1.5; }
-    .setup-box input { width: 100%; padding: 12px 14px; border: 1.5px solid #e5e7eb; border-radius: 10px; font-size: 14px; color: #001833; font-family: inherit; margin-bottom: 12px; background: #fafafa; }
-    .setup-box input:focus { outline: none; border-color: #003f8c; background: white; }
-    .btn-setup { width: 100%; background: linear-gradient(135deg, #003366, #0056a0); color: white; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    /* Password gate */
+    .gate { display: none; position: fixed; inset: 0; background: linear-gradient(145deg, #e8f2fc, #f0f6fb); z-index: 200; align-items: center; justify-content: center; padding: 24px; flex-direction: column; }
+    .gate.open { display: flex; }
+    .gate-box { background: white; border-radius: 24px; padding: 36px 28px; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 20px 60px rgba(0,51,102,.15); }
+    .gate-icon { font-size: 48px; margin-bottom: 16px; }
+    .gate-box h2 { font-size: 20px; font-weight: 800; color: #003366; margin-bottom: 6px; }
+    .gate-box p  { font-size: 13px; color: #6b7280; margin-bottom: 24px; line-height: 1.5; }
+    .gate-input { width: 100%; padding: 14px 16px; background: #fafafa; border: 1.5px solid #e5e7eb; border-radius: 12px; font-size: 18px; color: #001833; font-family: inherit; text-align: center; letter-spacing: 4px; margin-bottom: 8px; transition: border-color .2s; }
+    .gate-input:focus { outline: none; border-color: #003f8c; background: white; }
+    .gate-input.err { border-color: #ef4444; animation: shake .3s; }
+    .gate-err { font-size: 12px; color: #ef4444; min-height: 16px; margin-bottom: 12px; }
+    .btn-gate { width: 100%; background: linear-gradient(135deg, #003366, #0056a0); color: white; border: none; border-radius: 12px; padding: 15px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 6px 20px rgba(0,51,102,.25); }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 
-    .btn-config { position: fixed; bottom: 20px; right: 20px; background: white; border: 1.5px solid #d1d5db; color: #6b7280; font-size: 20px; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,.1); }
     .empty-state { text-align: center; padding: 40px 20px; color: #9ca3af; }
     .empty-state p { font-size: 14px; margin-top: 8px; }
   </style>
 </head>
 <body>
+
+<div class="gate open" id="gate">
+  <div class="gate-box">
+    <div class="gate-icon">🎙️</div>
+    <h2>Cerimonial</h2>
+    <p>IASD Boa Vista<br>Digite a senha para acessar</p>
+    <input class="gate-input" type="password" id="pwd" placeholder="••••••••••••" onkeydown="if(event.key==='Enter')checkPwd()">
+    <div class="gate-err" id="pwd-err"></div>
+    <button class="btn-gate" onclick="checkPwd()">Entrar</button>
+  </div>
+</div>
 
 <header>
   <span class="header-icon">🎙️</span>
@@ -106,45 +117,46 @@
   </div>
 </div>
 
-<div class="setup-overlay" id="setup-overlay">
-  <div class="setup-box">
-    <h2>Configurar</h2>
-    <p>Digite o <strong>Bin ID</strong> fornecido pelo responsável do app (disponível no botão ☁️ do organizador).</p>
-    <input type="text" id="bid-input" placeholder="Ex: 6643a1b2c3d4e5f6...">
-    <button class="btn-setup" onclick="saveSetup()">Conectar</button>
-  </div>
-</div>
-
-<button class="btn-config" onclick="openSetup()" title="Configurar">⚙️</button>
-
 <script>
-  const JB = 'https://api.jsonbin.io/v3';
-  let binId = new URLSearchParams(location.search).get('bid') || localStorage.getItem('cer-bid') || '';
+  const BIN_ID   = '6a076f2fadc21f119aa6cc4b';
+  const PASSWORD = 'boavista2026';
+  const JB       = 'https://api.jsonbin.io/v3';
   let checkedIds = JSON.parse(localStorage.getItem('cer-checked') || '[]');
-  let refreshTimer;
-  let lastData = null;
+  let refreshTimer, lastData = null;
+
+  function checkPwd() {
+    const val = document.getElementById('pwd').value;
+    if (val === PASSWORD) {
+      localStorage.setItem('cer-auth', Date.now() + 7*24*60*60*1000);
+      document.getElementById('gate').classList.remove('open');
+      fetchData();
+    } else {
+      const inp = document.getElementById('pwd');
+      inp.classList.add('err');
+      document.getElementById('pwd-err').textContent = 'Senha incorreta — tente novamente';
+      setTimeout(() => { inp.classList.remove('err'); inp.value = ''; document.getElementById('pwd-err').textContent = ''; inp.focus(); }, 900);
+    }
+  }
+
+  function isAuth() { const t = +localStorage.getItem('cer-auth'); return t && Date.now() < t; }
 
   function formatDate(s) { if (!s) return '—'; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
 
   function setStatus(msg, cls='') {
-    document.getElementById('status-bar').className = 'status-bar ' + cls;
+    document.getElementById('status-bar').className = 'status-bar '+cls;
     document.getElementById('status-text').textContent = msg;
   }
 
   async function fetchData() {
-    if (!binId) { openSetup(); return; }
     setStatus('Atualizando...', 'load');
     try {
-      const res = await fetch(`${JB}/b/${binId}/latest`);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const res = await fetch(`${JB}/b/${BIN_ID}/latest`);
+      if (!res.ok) throw new Error('HTTP '+res.status);
       const { record: data } = await res.json();
-      lastData = data;
-      render(data);
+      lastData = data; render(data);
       const dt = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '—';
       setStatus(`Atualizado às ${dt} · próximo em 30s`, 'ok');
-    } catch (e) {
-      setStatus('Erro: ' + e.message, 'err');
-    }
+    } catch(e) { setStatus('Erro: '+e.message, 'err'); }
     clearTimeout(refreshTimer);
     refreshTimer = setTimeout(fetchData, 30000);
   }
@@ -154,93 +166,69 @@
     document.getElementById('info-anciao').textContent = data.anciao || '—';
     document.getElementById('info-cer').textContent    = data.liderCerimonial || '—';
 
-    const allItems = [
-      ...(data.cultoItems||[]).filter(i=>i.enabled).map(i=>({...i,_sec:'culto'})),
-      ...(data.ssItems||[]).filter(i=>i.enabled).map(i=>({...i,_sec:'ss'})),
+    const all = [
+      ...(data.cultoItems||[]).filter(i=>i.enabled).map(i=>({...i,_s:'culto'})),
+      ...(data.ssItems||[]).filter(i=>i.enabled).map(i=>({...i,_s:'ss'})),
     ];
-
     const timeline = document.getElementById('timeline');
     timeline.innerHTML = '';
-
-    if (!allItems.length) {
+    if (!all.length) {
       timeline.innerHTML = `<div class="empty-state"><div style="font-size:40px;">📭</div><p>Nenhum momento configurado.</p></div>`;
-      document.getElementById('progress-bar').style.display = 'none';
-      return;
+      document.getElementById('progress-bar').style.display = 'none'; return;
     }
-
-    const done = allItems.filter(i=>checkedIds.includes(ikey(i))).length;
+    const done = all.filter(i=>checkedIds.includes(ikey(i))).length;
     document.getElementById('progress-bar').style.display = 'flex';
-    document.getElementById('prog-fill').style.width = (done/allItems.length*100)+'%';
-    document.getElementById('prog-label').textContent = `${done} / ${allItems.length}`;
+    document.getElementById('prog-fill').style.width = (done/all.length*100)+'%';
+    document.getElementById('prog-label').textContent = `${done} / ${all.length}`;
 
     let lastSec = null;
-    allItems.forEach((item, idx) => {
-      if (item._sec !== lastSec) {
-        const t = document.createElement('div');
-        t.className = 'section-title';
-        if (lastSec) t.style.paddingTop = '12px';
-        t.textContent = item._sec==='culto' ? 'Culto' : 'Escola Sabatina';
-        timeline.appendChild(t);
-        lastSec = item._sec;
+    all.forEach(item => {
+      if (item._s !== lastSec) {
+        const t = document.createElement('div'); t.className='section-title';
+        if (lastSec) t.style.paddingTop='12px';
+        t.textContent = item._s==='culto'?'Culto':'Escola Sabatina';
+        timeline.appendChild(t); lastSec = item._s;
       }
-      const key = ikey(item);
-      const isChecked = checkedIds.includes(key);
+      const key = ikey(item), isChecked = checkedIds.includes(key);
       const songs = (item.songs||[]).filter(s=>s&&s.trim());
-
-      let subHtml = '';
-      if (item.resp) subHtml += `<span class="resp-chip">${esc(item.resp)}</span>`;
-      if (item.hasSongs && songs.length) subHtml += `<span class="music-chip">🎵 ${songs.length} música${songs.length>1?'s':''}</span>`;
-      if (item.note && !item.hasSongs) subHtml += `<span class="note-chip">💡 ${esc(item.note)}</span>`;
-
+      let sub = '';
+      if (item.resp) sub += `<span class="resp-chip">${esc(item.resp)}</span>`;
+      if (item.hasSongs && songs.length) sub += `<span class="music-chip">🎵 ${songs.length} música${songs.length>1?'s':''}</span>`;
+      if (item.note && !item.hasSongs) sub += `<span class="note-chip">💡 ${esc(item.note)}</span>`;
       const row = document.createElement('div');
-      row.className = 'moment-row' + (isChecked?' checked':'');
-      row.dataset.key = key;
+      row.className = 'moment-row'+(isChecked?' checked':'');
       row.innerHTML = `
         <div class="timeline-track"><div class="tl-dot"></div><div class="tl-line"></div></div>
         <div class="moment-card">
           ${item.time?`<span class="time-tag">${esc(item.time)}</span>`:''}
           <div class="moment-info">
             <div class="moment-label">${esc(item.label)}</div>
-            ${subHtml?`<div class="moment-sub">${subHtml}</div>`:''}
+            ${sub?`<div class="moment-sub">${sub}</div>`:''}
           </div>
           <span class="check-icon">${isChecked?'✅':'○'}</span>
         </div>`;
-      row.addEventListener('click', () => toggleCheck(row, key, allItems));
+      row.addEventListener('click', () => toggleCheck(row, key, all));
       timeline.appendChild(row);
     });
   }
 
-  function ikey(item) { return `${item._sec}-${item.label}-${item.time}`; }
+  function ikey(i) { return `${i._s}-${i.label}-${i.time}`; }
 
-  function toggleCheck(row, key, allItems) {
+  function toggleCheck(row, key, all) {
     const idx = checkedIds.indexOf(key);
-    if (idx >= 0) checkedIds.splice(idx, 1); else checkedIds.push(key);
+    if (idx>=0) checkedIds.splice(idx,1); else checkedIds.push(key);
     localStorage.setItem('cer-checked', JSON.stringify(checkedIds));
     row.classList.toggle('checked');
-    row.querySelector('.check-icon').textContent = row.classList.contains('checked') ? '✅' : '○';
+    row.querySelector('.check-icon').textContent = row.classList.contains('checked')?'✅':'○';
     const done = checkedIds.length;
-    document.getElementById('prog-fill').style.width = (done/allItems.length*100)+'%';
-    document.getElementById('prog-label').textContent = `${done} / ${allItems.length}`;
+    document.getElementById('prog-fill').style.width = (done/all.length*100)+'%';
+    document.getElementById('prog-label').textContent = `${done} / ${all.length}`;
   }
 
   function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-  function openSetup() {
-    document.getElementById('bid-input').value = binId;
-    document.getElementById('setup-overlay').classList.add('open');
-  }
-
-  function saveSetup() {
-    const val = document.getElementById('bid-input').value.trim();
-    if (!val) return;
-    binId = val;
-    localStorage.setItem('cer-bid', val);
-    document.getElementById('setup-overlay').classList.remove('open');
-    fetchData();
-  }
-
-  if (binId) { localStorage.setItem('cer-bid', binId); fetchData(); }
-  else openSetup();
+  if (isAuth()) { document.getElementById('gate').classList.remove('open'); fetchData(); }
+  else document.getElementById('pwd').focus();
 </script>
 </body>
 </html>
