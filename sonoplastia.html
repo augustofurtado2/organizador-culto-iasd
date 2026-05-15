@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Sonoplastia — IASD Boa Vista</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #0a1628; color: #e2e8f0; min-height: 100vh; padding-bottom: 80px; }
+
+    header { background: linear-gradient(135deg, #001833, #003366); padding: 16px 20px 14px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 20px rgba(0,0,0,.4); }
+    .header-icon { font-size: 22px; }
+    header h1 { font-size: 16px; font-weight: 800; color: white; }
+    header p  { font-size: 11px; color: #93c5fd; font-weight: 500; }
+    .badge-som { margin-left: auto; background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; letter-spacing: .3px; }
+
+    .info-strip { background: #111c33; padding: 10px 20px; display: flex; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid #1e2d45; }
+    .info-pill { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94a3b8; }
+    .info-pill strong { color: #cbd5e1; font-weight: 600; }
+
+    .status-bar { background: #0f1e35; padding: 8px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e2d45; font-size: 11px; color: #4a5568; }
+    .status-bar.ok   { color: #22c55e; }
+    .status-bar.err  { color: #ef4444; }
+    .status-bar.load { color: #f59e0b; }
+    .btn-refresh { background: #1e2d45; border: 1px solid #2d4a6e; color: #60a5fa; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 8px; cursor: pointer; font-family: inherit; transition: all .2s; }
+    .btn-refresh:hover { background: #2d4a6e; }
+
+    .container { padding: 16px 16px 0; display: flex; flex-direction: column; gap: 10px; }
+    .section-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #475569; text-transform: uppercase; padding: 4px 0 2px; }
+
+    .moment-card { background: #131f35; border: 1px solid #1e2d45; border-radius: 14px; overflow: hidden; }
+    .moment-card.music { border-color: #1e40af; box-shadow: 0 0 0 1px #1e40af22, 0 4px 20px rgba(59,130,246,.08); }
+
+    .moment-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+    .time-tag { font-size: 13px; font-weight: 700; color: #60a5fa; background: #1e2d45; padding: 4px 10px; border-radius: 8px; min-width: 56px; text-align: center; flex-shrink: 0; }
+    .moment-card.music .time-tag { background: #1e3a5f; color: #93c5fd; }
+    .moment-label { flex: 1; font-size: 13px; font-weight: 600; color: #cbd5e1; }
+    .moment-card.music .moment-label { color: #e2e8f0; }
+    .resp-tag { font-size: 11px; color: #64748b; flex-shrink: 0; }
+    .music-icon { font-size: 14px; flex-shrink: 0; }
+
+    .songs-body { padding: 0 14px 14px; border-top: 1px solid #1e2d45; }
+    .moment-card.music .songs-body { border-top-color: #1e3a5f; }
+    .song-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #1a2840; }
+    .song-item:last-child { border-bottom: none; }
+    .song-num { font-size: 11px; font-weight: 700; color: #3b82f6; background: #1e2d45; padding: 2px 7px; border-radius: 6px; flex-shrink: 0; margin-top: 1px; }
+    .song-name { font-size: 14px; font-weight: 500; color: #e2e8f0; line-height: 1.4; }
+    .song-name.empty { color: #475569; font-style: italic; font-size: 13px; }
+    .note-tag { margin-top: 8px; padding: 6px 10px; background: #0f2027; border-left: 3px solid #f59e0b; border-radius: 0 8px 8px 0; font-size: 12px; color: #fbbf24; font-style: italic; }
+
+    /* Setup overlay */
+    .setup-overlay { display: none; position: fixed; inset: 0; background: rgba(10,22,40,.97); z-index: 100; align-items: center; justify-content: center; padding: 24px; }
+    .setup-overlay.open { display: flex; flex-direction: column; gap: 16px; }
+    .setup-box { background: #131f35; border: 1px solid #1e2d45; border-radius: 20px; padding: 28px; width: 100%; max-width: 360px; }
+    .setup-box h2 { font-size: 17px; font-weight: 800; color: white; margin-bottom: 6px; }
+    .setup-box p  { font-size: 13px; color: #94a3b8; margin-bottom: 20px; line-height: 1.5; }
+    .setup-box input { width: 100%; padding: 12px 14px; background: #0a1628; border: 1.5px solid #2d4a6e; border-radius: 10px; font-size: 14px; color: white; font-family: inherit; margin-bottom: 12px; }
+    .setup-box input:focus { outline: none; border-color: #3b82f6; }
+    .btn-setup { width: 100%; background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+    .btn-config { position: fixed; bottom: 20px; right: 20px; background: #1e2d45; border: 1px solid #2d4a6e; color: #60a5fa; font-size: 20px; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,.5); }
+    .empty-state { text-align: center; padding: 40px 20px; color: #334155; }
+    .empty-state p { font-size: 14px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="header-icon">🎛️</span>
+  <div><h1>Sonoplastia</h1><p>IASD Boa Vista</p></div>
+  <span class="badge-som">AO VIVO</span>
+</header>
+
+<div class="info-strip">
+  <span class="info-pill">📅 <strong id="info-data">—</strong></span>
+  <span class="info-pill">👤 <strong id="info-anciao">—</strong></span>
+</div>
+
+<div class="status-bar" id="status-bar">
+  <span id="status-text">Carregando...</span>
+  <button class="btn-refresh" onclick="fetchData()">↻ Atualizar</button>
+</div>
+
+<div class="container" id="container">
+  <div class="empty-state"><div style="font-size:40px;">🎵</div><p>Aguardando dados...</p></div>
+</div>
+
+<div class="setup-overlay" id="setup-overlay">
+  <div class="setup-box">
+    <h2>Configurar</h2>
+    <p>Digite o <strong>Bin ID</strong> fornecido pelo responsável do app (disponível no botão ☁️ do organizador).</p>
+    <input type="text" id="bid-input" placeholder="Ex: 6643a1b2c3d4e5f6...">
+    <button class="btn-setup" onclick="saveSetup()">Conectar</button>
+  </div>
+</div>
+
+<button class="btn-config" onclick="openSetup()" title="Configurar">⚙️</button>
+
+<script>
+  const JB = 'https://api.jsonbin.io/v3';
+  let binId = new URLSearchParams(location.search).get('bid') || localStorage.getItem('sono-bid') || '';
+  let refreshTimer;
+
+  function formatDate(s) { if (!s) return '—'; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
+
+  function setStatus(msg, cls='') {
+    document.getElementById('status-bar').className = 'status-bar ' + cls;
+    document.getElementById('status-text').textContent = msg;
+  }
+
+  async function fetchData() {
+    if (!binId) { openSetup(); return; }
+    setStatus('Atualizando...', 'load');
+    try {
+      const res = await fetch(`${JB}/b/${binId}/latest`);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const { record: data } = await res.json();
+      render(data);
+      const dt = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '—';
+      setStatus(`Atualizado às ${dt} · próximo em 30s`, 'ok');
+    } catch (e) {
+      setStatus('Erro: ' + e.message, 'err');
+    }
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(fetchData, 30000);
+  }
+
+  function render(data) {
+    document.getElementById('info-data').textContent   = formatDate(data.data);
+    document.getElementById('info-anciao').textContent = data.anciao || '—';
+    const container = document.getElementById('container');
+    container.innerHTML = '';
+    const cultoItems = (data.cultoItems||[]).filter(i=>i.enabled);
+    const ssItems    = (data.ssItems||[]).filter(i=>i.enabled);
+    if (!cultoItems.length && !ssItems.length) {
+      container.innerHTML = `<div class="empty-state"><div style="font-size:40px;">📭</div><p>Nenhum momento configurado.</p></div>`;
+      return;
+    }
+    if (cultoItems.length) {
+      const t = document.createElement('div'); t.className='section-title'; t.textContent='Culto';
+      container.appendChild(t);
+      cultoItems.forEach(i => container.appendChild(buildCard(i)));
+    }
+    if (ssItems.length) {
+      const t = document.createElement('div'); t.className='section-title'; t.style.marginTop='6px'; t.textContent='Escola Sabatina';
+      container.appendChild(t);
+      ssItems.forEach(i => container.appendChild(buildCard(i)));
+    }
+  }
+
+  function buildCard(item) {
+    const songs = (item.songs||[]).filter(s=>s&&s.trim());
+    const isMusic = item.hasSongs;
+    const card = document.createElement('div');
+    card.className = 'moment-card' + (isMusic?' music':'');
+    let songHtml = '';
+    if (isMusic) {
+      songHtml = (songs.length
+        ? songs.map((s,i)=>`<div class="song-item"><span class="song-num">${i+1}</span><span class="song-name">${esc(s)}</span></div>`).join('')
+        : `<div class="song-item"><span class="song-name empty">Músicas não definidas</span></div>`);
+      if (item.note) songHtml += `<div class="note-tag">💡 ${esc(item.note)}</div>`;
+      songHtml = `<div class="songs-body">${songHtml}</div>`;
+    } else if (item.note) {
+      songHtml = `<div class="songs-body"><div class="note-tag">💡 ${esc(item.note)}</div></div>`;
+    }
+    card.innerHTML = `
+      <div class="moment-head">
+        ${item.time?`<span class="time-tag">${esc(item.time)}</span>`:''}
+        <span class="moment-label">${esc(item.label)}</span>
+        ${item.resp?`<span class="resp-tag">${esc(item.resp)}</span>`:''}
+        ${isMusic?'<span class="music-icon">🎵</span>':''}
+      </div>${songHtml}`;
+    return card;
+  }
+
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function openSetup() {
+    document.getElementById('bid-input').value = binId;
+    document.getElementById('setup-overlay').classList.add('open');
+  }
+
+  function saveSetup() {
+    const val = document.getElementById('bid-input').value.trim();
+    if (!val) return;
+    binId = val;
+    localStorage.setItem('sono-bid', val);
+    document.getElementById('setup-overlay').classList.remove('open');
+    fetchData();
+  }
+
+  if (binId) { localStorage.setItem('sono-bid', binId); fetchData(); }
+  else openSetup();
+</script>
+</body>
+</html>
