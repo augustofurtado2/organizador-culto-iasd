@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizador de Culto — IASD Boa Vista</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: linear-gradient(145deg, #e8f2fc 0%, #f0f6fb 40%, #e4effa 100%);
+      color: #001833; min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: white;
+      padding: 18px 36px;
+      display: flex; align-items: center; gap: 14px;
+      box-shadow: 0 2px 20px rgba(0,51,102,.08);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .logo-circular {
+      height: 48px; width: 48px; object-fit: contain; flex-shrink: 0;
+    }
+    .logo-divider {
+      width: 1px; height: 36px; background: #e5e7eb; flex-shrink: 0;
+    }
+    header h1 { font-size: 20px; font-weight: 800; color: #003366; }
+    header p  { font-size: 12px; color: #6b7280; margin-top: 1px; font-weight: 500; }
+    .logo-identidade {
+      margin-left: auto; height: 38px; object-fit: contain; flex-shrink: 0;
+    }
+    .header-badge {
+      background: linear-gradient(135deg, #003366, #0056a0);
+      color: white; font-size: 11px; font-weight: 700; padding: 5px 12px;
+      border-radius: 20px; letter-spacing: .3px; flex-shrink: 0;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 860px; margin: 32px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── Cards ── */
+    .card {
+      background: white; border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0,51,102,.07), 0 1px 4px rgba(0,0,0,.04);
+      padding: 28px; border: 1px solid rgba(0,51,102,.08);
+    }
+    .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+    .card-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 17px;
+    }
+    .card-icon.blue   { background: #eff6ff; }
+    .card-icon.purple { background: #e8f2fc; }
+    .card-icon.green  { background: #f0fdf4; }
+    .card h2 { font-size: 16px; font-weight: 700; color: #003366; }
+
+    /* ── Info fields ── */
+    .info-row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .info-row .field { flex: 1; min-width: 160px; }
+    .field-label { display: block; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 7px; }
+    input[type="text"], input[type="date"] {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid #e5e7eb; border-radius: 12px;
+      font-size: 14px; font-family: inherit; color: #001833;
+      background: #fafafa; transition: all .2s;
+    }
+    input:focus { outline: none; border-color: #003f8c; background: white; box-shadow: 0 0 0 3px rgba(0,51,102,.12); }
+    input:disabled { opacity: .35; }
+    input::placeholder { color: #d1d5db; }
+
+    /* ── Toggle ── */
+    .toggle-wrap { display: flex; align-items: center; flex-shrink: 0; }
+    .toggle-wrap input[type="checkbox"] { display: none; }
+    .toggle-track {
+      width: 44px; height: 25px; background: #e5e7eb;
+      border-radius: 25px; position: relative; cursor: pointer; transition: background .25s;
+    }
+    .toggle-track::after {
+      content: ''; position: absolute; top: 3px; left: 3px;
+      width: 19px; height: 19px; background: white; border-radius: 50%;
+      transition: transform .25s; box-shadow: 0 2px 6px rgba(0,0,0,.18);
+    }
+    .toggle-wrap input:checked + .toggle-track { background: linear-gradient(135deg, #003366, #0056a0); }
+    .toggle-wrap input:checked + .toggle-track::after { transform: translateX(19px); }
+
+    /* ── Moment cards ── */
+    .moments-list { display: flex; flex-direction: column; gap: 8px; }
+    .moment-item {
+      border: 1.5px solid #f3f4f6; border-radius: 14px;
+      overflow: hidden; transition: all .2s;
+    }
+    .moment-item.on { border-color: #b3ccde; box-shadow: 0 2px 12px rgba(0,51,102,.08); }
+    .moment-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; background: #fafafa;
+    }
+    .moment-item.on .moment-row { background: linear-gradient(135deg, #f5f9fd, #e8f2fc 100%); }
+    .moment-name { flex: 1; font-size: 12.5px; font-weight: 700; color: #9ca3af; letter-spacing: .5px; }
+    .moment-item.on .moment-name { color: #003366; }
+    .music-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: .3px;
+      background: linear-gradient(135deg, #003366, #0056a0);
+      color: white; padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+    }
+    .moment-fields { display: flex; gap: 7px; }
+    .inp-time {
+      width: 70px; text-align: center; font-size: 13px; font-weight: 600;
+      padding: 7px 8px; border-radius: 10px; border: 1.5px solid #e5e7eb; background: white;
+    }
+    .inp-resp { width: 150px; font-size: 13px; padding: 7px 10px; border-radius: 10px; }
+    .reorder-btns { display: flex; flex-direction: column; gap: 1px; }
+    .btn-order {
+      background: none; border: none; color: #d1d5db; font-size: 10px;
+      cursor: pointer; padding: 2px 6px; border-radius: 5px; line-height: 1.3; transition: all .15s;
+    }
+    .btn-order:hover { background: #dceaf5; color: #003366; }
+    .btn-remove-item {
+      background: none; border: none; color: #fca5a5; font-size: 16px;
+      cursor: pointer; padding: 3px 7px; border-radius: 7px; transition: all .15s;
+    }
+    .btn-remove-item:hover { background: #fef2f2; color: #ef4444; }
+
+    /* ── Song expand ── */
+    .moment-expand {
+      padding: 14px 16px 16px; border-top: 1px solid #d6e8f5;
+      background: linear-gradient(180deg, #f5f9fd, #e8f2fc);
+      display: none;
+    }
+    .moment-item.on .moment-expand { display: block; }
+    .song-list { display: flex; flex-direction: column; gap: 6px; }
+    .song-row { display: flex; gap: 7px; align-items: center; }
+    .song-row input {
+      flex: 1; padding: 8px 12px; font-size: 13px; border-radius: 10px;
+      border: 1.5px solid #c0d8ed; background: white;
+    }
+    .song-row input:focus { border-color: #003f8c; box-shadow: 0 0 0 3px rgba(0,51,102,.1); }
+    .btn-rm-song {
+      background: none; border: none; color: #a3bcd4; font-size: 16px;
+      cursor: pointer; padding: 2px 6px; border-radius: 6px; transition: all .15s;
+    }
+    .btn-rm-song:hover { background: #fef2f2; color: #ef4444; }
+    .btn-add-song {
+      font-size: 12px; font-weight: 600; color: #003366;
+      background: white; border: 1.5px dashed #a3c4db;
+      border-radius: 10px; padding: 7px 14px; cursor: pointer;
+      margin-top: 4px; transition: all .2s; display: inline-block;
+    }
+    .btn-add-song:hover { background: #e8f2fc; border-color: #003366; }
+    .note-input {
+      margin-top: 10px; font-size: 12px !important; color: #9ca3af !important;
+      font-style: italic; border-color: #d6e8f5 !important; border-radius: 10px !important;
+    }
+
+    /* ── Add panel ── */
+    .add-panel { margin-top: 12px; }
+    .add-trigger {
+      background: white; border: 1.5px dashed #a3c4db;
+      border-radius: 12px; padding: 11px 20px; font-size: 13px; font-weight: 600;
+      color: #003366; cursor: pointer; width: 100%; text-align: center;
+      transition: all .2s;
+    }
+    .add-trigger:hover { background: #e8f2fc; border-color: #003366; }
+    .add-options { display: none; margin-top: 8px; background: #fafafa; border: 1.5px solid #e5e7eb; border-radius: 14px; padding: 16px; }
+    .add-options.open { display: block; }
+    .preset-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .btn-preset {
+      background: white; border: 1.5px solid #e5e7eb; border-radius: 10px;
+      padding: 8px 16px; font-size: 13px; font-weight: 600;
+      cursor: pointer; color: #374151; transition: all .2s;
+    }
+    .btn-preset:hover { border-color: #003366; color: #003366; background: #e8f2fc; }
+    .custom-row { display: flex; gap: 8px; }
+    .custom-row input { flex: 1; padding: 10px 14px; font-size: 13px; border-radius: 10px; }
+    .btn-add-custom {
+      background: linear-gradient(135deg, #003366, #0056a0); color: white;
+      border: none; border-radius: 10px; padding: 10px 18px;
+      font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0,51,102,.3); transition: opacity .2s;
+    }
+    .btn-add-custom:hover { opacity: .9; }
+
+    /* ── Actions ── */
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a); color: white;
+      border: none; border-radius: 14px; padding: 15px 28px;
+      font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 6px 20px rgba(34,197,94,.3);
+      transition: transform .15s, box-shadow .15s; flex: 1; justify-content: center;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(34,197,94,.35); }
+    .btn-secondary {
+      background: white; color: #003366;
+      border: 1.5px solid #b3ccde; border-radius: 14px; padding: 15px 28px;
+      font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; gap: 8px; transition: all .2s;
+      flex: 1; justify-content: center;
+    }
+    .btn-secondary:hover { background: #e8f2fc; border-color: #003366; }
+
+    /* ── Modal ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,10,40,.45); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; border-radius: 22px; width: 100%; max-width: 540px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 30px 80px rgba(0,51,102,.25); }
+    .modal-header { padding: 22px 26px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { font-size: 17px; font-weight: 800; color: #003366; }
+    .btn-close { background: #f3f4f6; border: none; font-size: 16px; cursor: pointer; color: #6b7280; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .btn-close:hover { background: #fee2e2; color: #ef4444; }
+    .modal-body { padding: 22px 26px; overflow-y: auto; flex: 1; }
+    .preview-box { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 14px; padding: 18px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.8; white-space: pre-wrap; word-break: break-word; color: #166534; }
+    .modal-footer { padding: 18px 26px; border-top: 1px solid #f3f4f6; display: flex; gap: 10px; }
+    .btn-copy { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; flex: 1; font-family: inherit; box-shadow: 0 4px 12px rgba(34,197,94,.3); transition: opacity .2s; }
+    .btn-copy:hover { opacity: .9; }
+    .btn-copy.copied { background: linear-gradient(135deg, #003366, #0056a0); box-shadow: 0 4px 12px rgba(0,51,102,.3); }
+    .btn-cancel { background: #f9fafb; color: #6b7280; border: 1.5px solid #e5e7eb; border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .btn-cancel:hover { background: #f3f4f6; }
+
+    /* ── Server button ── */
+    .btn-server {
+      background: #e8f2fc; border: 1.5px solid #b3ccde; border-radius: 10px;
+      font-size: 18px; cursor: pointer; padding: 6px 12px;
+      transition: all .2s; flex-shrink: 0;
+    }
+    .btn-server:hover { background: #d6e8f5; border-color: #003366; }
+    .server-status-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #d1d5db;
+      display: inline-block; margin-right: 6px;
+    }
+    .server-status-dot.ok  { background: #22c55e; }
+    .server-status-dot.err { background: #ef4444; }
+  </style>
+</head>
+<body>
+
+<header>
+  <img class="logo-circular" src="../02.LOGOS/Cópia de circular.png" alt="Logo Adventista">
+  <div class="logo-divider"></div>
+  <div><h1>Organizador de Culto</h1><p>IASD Boa Vista</p></div>
+  <img class="logo-identidade" src="../02.LOGOS/NOVA ID VISUAL/PNGs/Identidade_logomarca.png" alt="IASD Boa Vista">
+  <button class="btn-server" onclick="openServerModal()" title="Servidor">☁️</button>
+  <span class="header-badge">Sábado</span>
+</header>
+
+<div class="container">
+
+  <!-- Info -->
+  <div class="card">
+    <div class="card-header"><div class="card-icon blue">📅</div><h2>Informações do Culto</h2></div>
+    <div class="info-row">
+      <div class="field"><label class="field-label">Data do Culto</label><input type="date" id="data-culto"></div>
+      <div class="field"><label class="field-label">Ancião do Dia</label><input type="text" id="anciao" placeholder="Ex: David"></div>
+      <div class="field"><label class="field-label">Cerimonial</label><input type="text" id="lider-cerimonial" placeholder="Responsável" value="Cássia"></div>
+    </div>
+  </div>
+
+  <!-- Momentos do Culto -->
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">📋</div><h2>Momentos do Culto</h2></div>
+    <div class="moments-list" id="culto-list"></div>
+    <div class="add-panel">
+      <button class="add-trigger" onclick="toggleAddPanel('culto-add')">+ Adicionar momento</button>
+      <div class="add-options" id="culto-add">
+        <div class="preset-btns">
+          <button class="btn-preset" onclick="addPreset('culto', 'BATISMO')">⛦ BATISMO</button>
+          <button class="btn-preset" onclick="addPreset('culto', 'LEITURA DE ATA')">📄 LEITURA DE ATA</button>
+        </div>
+        <div class="custom-row">
+          <input type="text" id="culto-custom-input" placeholder="Nome do momento personalizado...">
+          <button class="btn-add-custom" onclick="addCustom('culto')">Adicionar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Escola Sabatina -->
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">📖</div><h2>Escola Sabatina</h2></div>
+    <div class="moments-list" id="ss-list"></div>
+    <div class="add-panel">
+      <button class="add-trigger" onclick="toggleAddPanel('ss-add')">+ Adicionar momento</button>
+      <div class="add-options" id="ss-add">
+        <div class="custom-row">
+          <input type="text" id="ss-custom-input" placeholder="Nome do momento...">
+          <button class="btn-add-custom" onclick="addCustom('ss')">Adicionar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ações -->
+  <div class="actions">
+    <button class="btn-secondary" onclick="clearAll()">🗑 Limpar tudo</button>
+    <button class="btn-primary" onclick="exportWpp()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Exportar para WhatsApp
+    </button>
+  </div>
+
+</div>
+
+<footer style="text-align:center; padding: 28px 16px; font-size: 12px; color: #9ca3af; font-family: 'Inter', 'Segoe UI', sans-serif; font-weight: 500; letter-spacing: .3px;">
+  Desenvolvido por <strong style="color:#003366;">Augusto Furtado</strong> &mdash; 2026
+</footer>
+
+<!-- JSONBin Modal -->
+<div class="modal-overlay" id="server-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>☁️ JSONBin — Nuvem gratuita</h3>
+      <button class="btn-close" onclick="closeServerModal()">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <label class="field-label">Master Key (jsonbin.io → API Keys)</label>
+        <input type="password" id="jb-key" placeholder="$2b$10$..." style="width:100%;margin-top:6px;">
+        <p style="font-size:11px;color:#9ca3af;margin-top:5px;">Acesse <strong>jsonbin.io → API Keys</strong> e copie sua chave.</p>
+      </div>
+      <div>
+        <label class="field-label">Bin ID <span style="font-weight:400;color:#9ca3af;">(gerado no primeiro salvamento)</span></label>
+        <input type="text" id="jb-bid" placeholder="Automático" style="width:100%;margin-top:6px;" readonly>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-primary" style="font-size:13px;padding:12px 16px;" onclick="saveToServer()">☁️ Salvar</button>
+        <button class="btn-secondary" style="font-size:13px;padding:12px 16px;" onclick="loadFromServer()">⬇️ Carregar</button>
+      </div>
+      <div id="server-status" style="font-size:13px;color:#6b7280;text-align:center;min-height:20px;"></div>
+      <hr style="border:none;border-top:1px solid #f3f4f6;">
+      <div style="font-size:12px;line-height:2;">
+        <strong style="color:#6b7280;">Para a equipe — informe o Bin ID:</strong><br>
+        <span id="display-bid" style="font-family:monospace;background:#f3f4f6;padding:2px 8px;border-radius:6px;font-size:13px;color:#003366;">—</span>
+        <br><span style="color:#9ca3af;">Os arquivos sonoplastia.html e cerimonial.html pedem esse ID no primeiro acesso.</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeServerModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📱 Prévia para WhatsApp</h3>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body"><div class="preview-box" id="wpp-preview"></div></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Fechar</button>
+      <button class="btn-copy" id="btn-copy" onclick="copyText()">📋 Copiar mensagem</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Data ──────────────────────────────────────────────
+  let cultoItems = [];
+  let ssItems    = [];
+  let uid        = 0;
+  const newId    = () => ++uid;
+
+  const DEFAULT_CULTO = [
+    { label: 'BOAS VINDAS',              hasSongs: false, time: '9:30',  resp: '', songs: [],     note: '' },
+    { label: 'MOMENTO DE LOUVOR',        hasSongs: true,  time: '9:32',  resp: '', songs: ['','',''], note: '' },
+    { label: 'ORAÇÃO INTERCESSORA',      hasSongs: false, time: '9:42',  resp: '', songs: [],     note: 'Em duplas/trios' },
+    { label: 'OFERTÓRIO',                hasSongs: false, time: '9:52',  resp: '', songs: [],     note: '' },
+    { label: 'PROVAI E VEDE',            hasSongs: false, time: '9:52',  resp: '', songs: [],     note: 'Música instrumental piano após vídeo' },
+    { label: 'MENSAGEM MUSICAL',         hasSongs: true,  time: '10:00', resp: '', songs: [''],   note: '' },
+    { label: 'ADORAÇÃO INFANTIL',        hasSongs: false, time: '10:04', resp: '', songs: [],     note: '' },
+    { label: 'SERMÃO',                   hasSongs: false, time: '10:20', resp: '', songs: [],     note: '' },
+    { label: 'TRANSIÇÃO ESCOLA SABATINA',hasSongs: false, time: '11:15', resp: '', songs: [],     note: '' },
+  ];
+
+  const DEFAULT_SS = [
+    { label: 'INÍCIO / DIVISÃO EM CLASSES', hasSongs: false, time: '11:15', resp: '', songs: [], note: '' },
+    { label: 'ENCERRAMENTO',                hasSongs: false, time: '12:10', resp: '', songs: [], note: '' },
+  ];
+
+  function makeItem(data) {
+    return { id: newId(), label: data.label, hasSongs: !!data.hasSongs, enabled: true,
+             time: data.time || '', resp: data.resp || '', songs: [...(data.songs || [])], note: data.note || '' };
+  }
+
+  // ── Save DOM values back to array ──────────────────────
+  function saveList(listId, arr) {
+    document.querySelectorAll(`#${listId} .moment-item`).forEach(el => {
+      const id   = +el.dataset.id;
+      const item = arr.find(i => i.id === id);
+      if (!item) return;
+      item.enabled = el.querySelector('input[type="checkbox"]').checked;
+      item.time    = el.querySelector('.inp-time')?.value || '';
+      item.resp    = el.querySelector('.inp-resp')?.value || '';
+      item.songs   = Array.from(el.querySelectorAll('.song-input')).map(i => i.value);
+      item.note    = el.querySelector('.note-input')?.value || '';
+    });
+  }
+
+  // ── Render a list ──────────────────────────────────────
+  function renderList(listId, arr) {
+    const container = document.getElementById(listId);
+    container.innerHTML = '';
+    arr.forEach((item, idx) => {
+      const el = document.createElement('div');
+      el.className = 'moment-item' + (item.enabled ? ' on' : '');
+      el.dataset.id = item.id;
+
+      const songRows = item.hasSongs
+        ? `<div class="moment-expand">
+             <div class="song-list" id="sl-${item.id}">
+               ${(item.songs.length ? item.songs : ['']).map((s, i) =>
+                 `<div class="song-row">
+                    <input type="text" class="song-input" value="${s.replace(/"/g,'&quot;')}" placeholder="Música ${i+1}">
+                    <button class="btn-rm-song" onclick="removeSong(this)">×</button>
+                  </div>`).join('')}
+               <button class="btn-add-song" onclick="addSong(${item.id},'${listId}',${JSON.stringify(arr).replace(/'/g,"\\'")} )">+ música</button>
+             </div>
+             ${item.note !== undefined ? `<input type="text" class="note-input" style="margin-top:8px;font-size:12px;color:#718096;font-style:italic" value="${item.note.replace(/"/g,'&quot;')}" placeholder="Observação...">` : ''}
+           </div>`
+        : (item.note
+            ? `<div class="moment-expand"><input type="text" class="note-input" style="font-size:12px;color:#718096;font-style:italic;width:100%" value="${item.note.replace(/"/g,'&quot;')}" placeholder="Observação..."></div>`
+            : '');
+
+      el.innerHTML = `
+        <div class="moment-row">
+          <label class="toggle-wrap">
+            <input type="checkbox" ${item.enabled ? 'checked' : ''} onchange="onToggle(this)">
+            <span class="toggle-track"></span>
+          </label>
+          <span class="moment-name">${item.label}</span>
+          ${item.hasSongs ? '<span class="music-badge">🎵 Músicas</span>' : ''}
+          <div class="moment-fields">
+            <input type="text" class="inp-time" value="${item.time}" placeholder="00:00" ${!item.enabled?'disabled':''}>
+            <input type="text" class="inp-resp" value="${item.resp}" placeholder="Responsável" ${!item.enabled?'disabled':''}>
+          </div>
+          <div class="reorder-btns">
+            <button class="btn-order" onclick="move('${listId}',${item.id},-1)" title="Mover para cima">▲</button>
+            <button class="btn-order" onclick="move('${listId}',${item.id},1)"  title="Mover para baixo">▼</button>
+          </div>
+          <button class="btn-remove-item" onclick="removeItem('${listId}',${item.id})" title="Remover">×</button>
+        </div>
+        ${songRows}`;
+      container.appendChild(el);
+    });
+  }
+
+  function getList(listId) { return listId === 'culto-list' ? cultoItems : ssItems; }
+
+  function onToggle(cb) {
+    const item = cb.closest('.moment-item');
+    item.classList.toggle('on', cb.checked);
+    item.querySelectorAll('.inp-time,.inp-resp,.song-input,.note-input').forEach(i => i.disabled = !cb.checked);
+  }
+
+  function move(listId, id, dir) {
+    const arr = getList(listId);
+    saveList(listId, arr);
+    const idx = arr.findIndex(i => i.id === id);
+    if (idx < 0) return;
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= arr.length) return;
+    [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+    renderList(listId, arr);
+  }
+
+  function removeItem(listId, id) {
+    const arr = getList(listId);
+    saveList(listId, arr);
+    const idx = arr.findIndex(i => i.id === id);
+    if (idx >= 0) arr.splice(idx, 1);
+    renderList(listId, arr);
+  }
+
+  function addSong(itemId, listId) {
+    const arr  = getList(listId);
+    saveList(listId, arr);
+    const item = arr.find(i => i.id === itemId);
+    if (item) item.songs.push('');
+    renderList(listId, arr);
+    // focus last song input
+    const sl = document.getElementById('sl-' + itemId);
+    if (sl) { const inputs = sl.querySelectorAll('.song-input'); if (inputs.length) inputs[inputs.length-1].focus(); }
+  }
+
+  function removeSong(btn) {
+    btn.closest('.song-row').remove();
+  }
+
+  // ── Add panel ──────────────────────────────────────────
+  function toggleAddPanel(panelId) {
+    document.getElementById(panelId).classList.toggle('open');
+  }
+
+  function addPreset(listTarget, label) {
+    const arr = getList(listTarget + '-list');
+    saveList(listTarget + '-list', arr);
+    arr.push(makeItem({ label, hasSongs: false }));
+    renderList(listTarget + '-list', arr);
+    document.getElementById(listTarget + '-add').classList.remove('open');
+  }
+
+  function addCustom(listTarget) {
+    const input = document.getElementById(listTarget + '-custom-input');
+    const label = input.value.trim().toUpperCase();
+    if (!label) { input.focus(); return; }
+    const arr = getList(listTarget + '-list');
+    saveList(listTarget + '-list', arr);
+    arr.push(makeItem({ label, hasSongs: false }));
+    renderList(listTarget + '-list', arr);
+    input.value = '';
+    document.getElementById(listTarget + '-add').classList.remove('open');
+  }
+
+  // ── Team ──────────────────────────────────────────────
+  function getInitials(n) { return (n||'?').trim().split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2)||'?'; }
+
+  function addTeamMember(name = '') {
+    const grid = document.getElementById('team-grid');
+    const div  = document.createElement('div');
+    div.className = 'team-member';
+    div.innerHTML = `
+      <div class="avatar">${name ? getInitials(name) : '?'}</div>
+      <div style="flex:1"><div class="role-label">Cerimonial</div><input type="text" value="${name}" placeholder="Nome do membro"></div>
+      <button class="btn-remove" onclick="this.closest('.team-member').remove()">×</button>`;
+    div.querySelector('input').addEventListener('input', function() {
+      this.closest('.team-member').querySelector('.avatar').textContent = this.value ? getInitials(this.value) : '?';
+    });
+    grid.appendChild(div);
+  }
+
+  // ── Export ─────────────────────────────────────────────
+  function formatDate(s) { if (!s) return '[DATA]'; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
+
+  function exportWpp() {
+    saveList('culto-list', cultoItems);
+    saveList('ss-list', ssItems);
+    const anciao = document.getElementById('anciao').value.trim();
+    const lider  = document.getElementById('lider-cerimonial').value.trim();
+
+    let text = `CULTO DE SÁBADO ${formatDate(document.getElementById('data-culto').value)}\n\n`;
+
+    cultoItems.forEach(r => {
+      if (!r.enabled) return;
+      text += [r.time, '-', r.label, r.resp].filter(Boolean).join(' ') + '\n';
+      r.songs.forEach(s => { if (s.trim()) text += `-> ${s.trim()}\n`; });
+      if (r.note) text += `${r.note}\n`;
+    });
+
+    const activeSS = ssItems.filter(r => r.enabled);
+    if (activeSS.length) {
+      text += `\nESCOLA SABATINA\n`;
+      activeSS.forEach(r => {
+        text += [r.time, '-', r.label, r.resp].filter(Boolean).join(' ') + '\n';
+      });
+    }
+
+    text += `\nAncião: ${anciao || '[ANCIÃO]'}`;
+    if (lider) text += `\nCerimonial: ${lider}`;
+
+    document.getElementById('wpp-preview').textContent = text;
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    const btn = document.getElementById('btn-copy');
+    btn.textContent = '📋 Copiar mensagem'; btn.classList.remove('copied');
+  }
+
+  function copyText() {
+    navigator.clipboard.writeText(document.getElementById('wpp-preview').textContent).then(() => {
+      const btn = document.getElementById('btn-copy');
+      btn.textContent = '✅ Copiado!'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copiar mensagem'; btn.classList.remove('copied'); }, 2500);
+    });
+  }
+
+  function clearAll() {
+    if (!confirm('Redefinir tudo para os valores padrão?')) return;
+    init();
+  }
+
+  // ── JSONBin Cloud ──────────────────────────────────────
+  const JB = 'https://api.jsonbin.io/v3';
+
+  function openServerModal() {
+    document.getElementById('jb-key').value = localStorage.getItem('jb-key') || '';
+    const bid = localStorage.getItem('jb-bid') || '';
+    document.getElementById('jb-bid').value = bid;
+    document.getElementById('display-bid').textContent = bid || '—';
+    document.getElementById('server-status').textContent = '';
+    document.getElementById('server-modal').classList.add('open');
+  }
+
+  function closeServerModal() {
+    const key = document.getElementById('jb-key').value.trim();
+    if (key) localStorage.setItem('jb-key', key);
+    document.getElementById('server-modal').classList.remove('open');
+  }
+
+  function setServerStatus(msg, color = '#6b7280') {
+    const el = document.getElementById('server-status');
+    el.textContent = msg; el.style.color = color;
+  }
+
+  async function saveToServer() {
+    const key = document.getElementById('jb-key').value.trim();
+    if (!key) { setServerStatus('Informe a Master Key.', '#ef4444'); return; }
+    localStorage.setItem('jb-key', key);
+    saveList('culto-list', cultoItems);
+    saveList('ss-list', ssItems);
+    const payload = {
+      data: document.getElementById('data-culto').value,
+      anciao: document.getElementById('anciao').value,
+      liderCerimonial: document.getElementById('lider-cerimonial').value,
+      cultoItems, ssItems,
+      updatedAt: new Date().toISOString()
+    };
+    setServerStatus('Salvando...', '#d97706');
+    try {
+      let bid = localStorage.getItem('jb-bid') || '';
+      let res;
+      if (bid) {
+        res = await fetch(`${JB}/b/${bid}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': key },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        res = await fetch(`${JB}/b`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': key,
+            'X-Bin-Name': 'culto-iasd',
+            'X-Bin-Private': 'false'
+          },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const json = await res.json();
+          bid = json.metadata.id;
+          localStorage.setItem('jb-bid', bid);
+          document.getElementById('jb-bid').value = bid;
+          document.getElementById('display-bid').textContent = bid;
+        }
+      }
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      setServerStatus('✅ Salvo! Bin ID: ' + (localStorage.getItem('jb-bid') || ''), '#16a34a');
+    } catch (e) {
+      setServerStatus('❌ ' + e.message, '#ef4444');
+    }
+  }
+
+  async function loadFromServer() {
+    const key = document.getElementById('jb-key').value.trim();
+    const bid = localStorage.getItem('jb-bid') || '';
+    if (!key) { setServerStatus('Informe a Master Key.', '#ef4444'); return; }
+    if (!bid)  { setServerStatus('Salve primeiro para criar o bin.', '#ef4444'); return; }
+    localStorage.setItem('jb-key', key);
+    setServerStatus('Carregando...', '#d97706');
+    try {
+      const res = await fetch(`${JB}/b/${bid}/latest`, {
+        headers: { 'X-Master-Key': key }
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const { record: data } = await res.json();
+      document.getElementById('data-culto').value       = data.data || '';
+      document.getElementById('anciao').value            = data.anciao || '';
+      document.getElementById('lider-cerimonial').value  = data.liderCerimonial || '';
+      uid = 0;
+      cultoItems = (data.cultoItems || []).map(item => ({ ...item, id: newId() }));
+      ssItems    = (data.ssItems    || []).map(item => ({ ...item, id: newId() }));
+      renderList('culto-list', cultoItems);
+      renderList('ss-list', ssItems);
+      const dt = data.updatedAt ? new Date(data.updatedAt).toLocaleString('pt-BR') : '—';
+      setServerStatus(`✅ Carregado! Salvo em: ${dt}`, '#16a34a');
+    } catch (e) {
+      setServerStatus('❌ ' + e.message, '#ef4444');
+    }
+  }
+
+  // ── Init ───────────────────────────────────────────────
+  function init() {
+    uid = 0;
+    cultoItems = DEFAULT_CULTO.map(makeItem);
+    ssItems    = DEFAULT_SS.map(makeItem);
+
+    const today = new Date();
+    const diff  = (6 - today.getDay() + 7) % 7 || 7;
+    const sat   = new Date(today); sat.setDate(today.getDate() + diff);
+    document.getElementById('data-culto').value = sat.toISOString().split('T')[0];
+    document.getElementById('anciao').value = 'David';
+
+    renderList('culto-list', cultoItems);
+    renderList('ss-list', ssItems);
+  }
+
+  init();
+
+</script>
+</body>
+</html>
