@@ -330,10 +330,24 @@
       </div>
       <div id="server-status" style="font-size:13px;color:#6b7280;text-align:center;min-height:20px;"></div>
       <hr style="border:none;border-top:1px solid #f3f4f6;">
-      <div style="font-size:12px;line-height:2;">
-        <strong style="color:#6b7280;">Para a equipe — informe o Bin ID:</strong><br>
-        <span id="display-bid" style="font-family:monospace;background:#f3f4f6;padding:2px 8px;border-radius:6px;font-size:13px;color:#003366;">—</span>
-        <br><span style="color:#9ca3af;">Os arquivos sonoplastia.html e cerimonial.html pedem esse ID no primeiro acesso.</span>
+      <div style="font-size:12px;line-height:1.8;">
+        <strong style="color:#6b7280;">Links para a equipe (copie e mande no WhatsApp):</strong>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:#9ca3af;letter-spacing:.5px;margin-bottom:3px;">🎛️ SONOPLASTIA</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <code id="link-sono" style="flex:1;background:#f3f4f6;padding:6px 10px;border-radius:8px;font-size:11px;color:#003366;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</code>
+              <button onclick="copyLink('link-sono',this)" style="background:#003366;color:white;border:none;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;">Copiar</button>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:#9ca3af;letter-spacing:.5px;margin-bottom:3px;">🎙️ CERIMONIAL</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <code id="link-cer" style="flex:1;background:#f3f4f6;padding:6px 10px;border-radius:8px;font-size:11px;color:#003366;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</code>
+              <button onclick="copyLink('link-cer',this)" style="background:#003366;color:white;border:none;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;">Copiar</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -585,14 +599,31 @@
   }
 
   // ── JSONBin Cloud ──────────────────────────────────────
-  const JB = 'https://api.jsonbin.io/v3';
+  const JB       = 'https://api.jsonbin.io/v3';
+  const PAGES_URL = 'https://organizador-culto-iasd.pages.dev';
+
+  function updateShareLinks(bid) {
+    const base = bid ? `${PAGES_URL}/` : null;
+    document.getElementById('link-sono').textContent = base ? `${base}sonoplastia.html?bid=${bid}` : '—';
+    document.getElementById('link-cer').textContent  = base ? `${base}cerimonial.html?bid=${bid}`  : '—';
+  }
+
+  function copyLink(elId, btn) {
+    const text = document.getElementById(elId).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✅ Copiado!';
+      btn.style.background = '#16a34a';
+      setTimeout(() => { btn.textContent = orig; btn.style.background = '#003366'; }, 2000);
+    });
+  }
 
   function openServerModal() {
     document.getElementById('jb-key').value = localStorage.getItem('jb-key') || '';
     const bid = localStorage.getItem('jb-bid') || '';
     document.getElementById('jb-bid').value = bid;
-    document.getElementById('display-bid').textContent = bid || '—';
     document.getElementById('server-status').textContent = '';
+    updateShareLinks(bid);
     document.getElementById('server-modal').classList.add('open');
   }
 
@@ -650,7 +681,9 @@
         }
       }
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      setServerStatus('✅ Salvo! Bin ID: ' + (localStorage.getItem('jb-bid') || ''), '#16a34a');
+      const savedBid = localStorage.getItem('jb-bid') || '';
+      updateShareLinks(savedBid);
+      setServerStatus('✅ Salvo! Bin ID: ' + savedBid, '#16a34a');
     } catch (e) {
       setServerStatus('❌ ' + e.message, '#ef4444');
     }
