@@ -150,6 +150,22 @@
     .btn-copy-msg.copied { background: linear-gradient(135deg, #003366, #0056a0); box-shadow: 0 4px 12px rgba(0,51,102,.3); }
     .btn-cancel { background: #f9fafb; color: #6b7280; border: 1.5px solid #e5e7eb; border-radius: 10px; padding: 11px 22px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
     .btn-cancel:hover { background: #f3f4f6; }
+
+    /* ── Music Picker ── */
+    .music-modal { max-width: 600px; }
+    .music-search-wrap { position: relative; }
+    .music-search { width: 100%; padding: 11px 14px 11px 38px; border: 1.5px solid #e5e7eb; border-radius: 12px; font-size: 14px; font-family: inherit; background: #fafafa; }
+    .music-search:focus { outline: none; border-color: #003f8c; background: white; box-shadow: 0 0 0 3px rgba(0,51,102,.1); }
+    .music-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; }
+    .music-results { flex: 1; overflow-y: auto; max-height: 380px; display: flex; flex-direction: column; gap: 2px; }
+    .music-item { padding: 10px 14px; border-radius: 10px; cursor: pointer; transition: background .1s; display: flex; flex-direction: column; gap: 2px; }
+    .music-item:hover { background: #eff6ff; }
+    .music-item-name { font-size: 13px; font-weight: 600; color: #001833; }
+    .music-item-album { font-size: 11px; color: #9ca3af; }
+    .music-empty { text-align: center; padding: 32px; color: #9ca3af; font-size: 13px; }
+    .music-count { font-size: 11px; color: #9ca3af; text-align: right; padding: 2px 0; }
+    .btn-pick-music { background: #eff6ff; border: 1.5px solid #bfdbfe; color: #003366; border-radius: 8px; font-size: 13px; cursor: pointer; padding: 4px 9px; flex-shrink: 0; transition: all .15s; line-height: 1; }
+    .btn-pick-music:hover { background: #dbeafe; border-color: #003366; }
   </style>
 </head>
 <body>
@@ -286,6 +302,29 @@
   </div>
 </div>
 
+<!-- ── Modal: Busca de Músicas ── -->
+<div class="modal-overlay" id="music-modal">
+  <div class="modal music-modal">
+    <div class="modal-header">
+      <h3>🎵 Buscar Música — Louvor JA</h3>
+      <button class="btn-close" onclick="closeMusicModal()">✕</button>
+    </div>
+    <div class="modal-body" style="gap:10px;">
+      <div class="music-search-wrap">
+        <span class="music-search-icon">🔍</span>
+        <input class="music-search" id="music-search" type="text" placeholder="Digite o nome da música ou álbum..." oninput="filterMusicas(this.value)" autocomplete="off">
+      </div>
+      <div class="music-count" id="music-count"></div>
+      <div class="music-results" id="music-results">
+        <div class="music-empty">Digite para buscar entre 1.889 músicas</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeMusicModal()">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Modal: WhatsApp ── -->
 <div class="modal-overlay" id="wpp-modal">
   <div class="modal">
@@ -393,6 +432,7 @@
                ${(item.songs.length ? item.songs : ['']).map((s, i) =>
                  `<div class="song-row">
                     <input type="text" class="song-input" value="${esc(s)}" placeholder="Música ${i+1}">
+                    <button class="btn-pick-music" onclick="openMusicPicker(this.previousElementSibling)" title="Buscar no Louvor JA">🎵</button>
                     <button class="btn-rm-song" onclick="this.closest('.song-row').remove()">×</button>
                   </div>`).join('')}
                <button class="btn-add-song" onclick="addSong(${item.id},'${listId}')">+ música</button>
@@ -647,6 +687,80 @@
       const dt = d.updatedAt ? new Date(d.updatedAt).toLocaleString('pt-BR') : '—';
       setCloudStatus(`✅ Carregado! Salvo em: ${dt}`, '#16a34a');
     } catch(e) { setCloudStatus('❌ ' + e.message, '#ef4444'); }
+  }
+
+  // ── Music Picker ─────────────────────────────────────────
+  let musicDB = null, pickerTarget = null;
+
+  async function loadMusicas() {
+    if (musicDB) return musicDB;
+    try {
+      const res = await fetch('musicas.json');
+      musicDB = await res.json();
+    } catch(e) { musicDB = []; }
+    return musicDB;
+  }
+
+  async function openMusicPicker(inputEl) {
+    pickerTarget = inputEl;
+    document.getElementById('music-modal').classList.add('open');
+    const search = document.getElementById('music-search');
+    search.value = inputEl.value || '';
+    document.getElementById('music-results').innerHTML = '<div class="music-empty">Carregando...</div>';
+    document.getElementById('music-count').textContent = '';
+    await loadMusicas();
+    filterMusicas(search.value);
+    setTimeout(() => search.focus(), 50);
+  }
+
+  function closeMusicModal() {
+    document.getElementById('music-modal').classList.remove('open');
+    pickerTarget = null;
+  }
+
+  function filterMusicas(query) {
+    const results = document.getElementById('music-results');
+    const countEl = document.getElementById('music-count');
+    if (!musicDB) return;
+    const q = query.trim().toLowerCase();
+    const matches = q.length < 2
+      ? []
+      : musicDB.filter(m =>
+          m.nome.toLowerCase().includes(q) ||
+          (m.albuns || '').toLowerCase().includes(q)
+        ).slice(0, 80);
+
+    if (q.length < 2) {
+      results.innerHTML = '<div class="music-empty">Digite ao menos 2 letras para buscar</div>';
+      countEl.textContent = '';
+      return;
+    }
+    if (!matches.length) {
+      results.innerHTML = '<div class="music-empty">Nenhuma música encontrada</div>';
+      countEl.textContent = '';
+      return;
+    }
+    countEl.textContent = `${matches.length} resultado${matches.length > 1 ? 's' : ''}${matches.length === 80 ? ' (mostrando primeiros 80)' : ''}`;
+    results.innerHTML = matches.map(m =>
+      `<div class="music-item" onclick="selectMusica('${m.nome.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">
+         <span class="music-item-name">${highlight(esc(m.nome), q)}</span>
+         <span class="music-item-album">${esc(m.albuns || '')}</span>
+       </div>`
+    ).join('');
+  }
+
+  function highlight(text, q) {
+    const idx = text.toLowerCase().indexOf(q.toLowerCase());
+    if (idx < 0) return text;
+    return text.slice(0, idx) + `<mark style="background:#fef08a;border-radius:3px;padding:0 1px">${text.slice(idx, idx + q.length)}</mark>` + text.slice(idx + q.length);
+  }
+
+  function selectMusica(nome) {
+    if (pickerTarget) {
+      pickerTarget.value = nome;
+      pickerTarget.dispatchEvent(new Event('input'));
+    }
+    closeMusicModal();
   }
 
   // ── Utils ─────────────────────────────────────────────────
