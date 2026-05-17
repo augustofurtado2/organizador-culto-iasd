@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>IASD Boa Vista — Programa do Culto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #f0f6fb; color: #001833; min-height: 100vh; }
+
+    /* ── Hero ── */
+    .hero { background: linear-gradient(145deg, #001833, #003f8c 60%, #0056a0); padding: 28px 20px 24px; text-align: center; }
+    .hero-logo { font-size: 42px; margin-bottom: 8px; }
+    .hero h1 { font-size: 22px; font-weight: 800; color: white; letter-spacing: -.3px; }
+    .hero p  { font-size: 13px; color: #93c5fd; font-weight: 500; margin-top: 4px; }
+    .hero-meta { margin-top: 16px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+    .hero-pill { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #bfdbfe; background: rgba(255,255,255,.1); padding: 5px 12px; border-radius: 20px; }
+    .hero-pill strong { color: white; font-weight: 700; }
+
+    /* ── Nav cards ── */
+    .nav-section { padding: 20px 16px 4px; }
+    .nav-section h2 { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: #9ca3af; text-transform: uppercase; margin-bottom: 12px; }
+    .nav-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .nav-card { border-radius: 16px; padding: 16px 10px 14px; text-align: center; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform .15s, box-shadow .15s; cursor: pointer; }
+    .nav-card:active { transform: scale(.96); }
+    .nav-card .card-icon { font-size: 26px; }
+    .nav-card .card-label { font-size: 11px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; }
+    .nav-card .card-desc { font-size: 10px; font-weight: 500; opacity: .8; line-height: 1.3; }
+
+    .card-adm  { background: linear-gradient(145deg, #065f46, #059669); color: white; box-shadow: 0 4px 16px rgba(5,150,105,.3); }
+    .card-sono { background: linear-gradient(145deg, #1e3a5f, #1e40af); color: white; box-shadow: 0 4px 16px rgba(30,64,175,.3); }
+    .card-cer  { background: linear-gradient(145deg, #003366, #0056a0); color: white; box-shadow: 0 4px 16px rgba(0,51,102,.3); }
+
+    /* ── Status ── */
+    .status-bar { background: white; margin: 16px 16px 0; border-radius: 12px; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #9ca3af; border: 1px solid #e5e7eb; }
+    .status-bar.ok   { color: #16a34a; }
+    .status-bar.err  { color: #ef4444; }
+    .status-bar.load { color: #d97706; }
+    .btn-refresh { background: #eff6ff; border: 1px solid #bfdbfe; color: #003366; font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+
+    /* ── Program ── */
+    .prog-section { padding: 12px 16px 80px; }
+    .prog-section h2 { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: #9ca3af; text-transform: uppercase; margin-bottom: 12px; }
+    .section-title { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: #9ca3af; text-transform: uppercase; padding: 8px 0 6px; }
+
+    .moment-card { background: white; border-radius: 14px; border: 1.5px solid #f3f4f6; box-shadow: 0 1px 6px rgba(0,51,102,.05); display: flex; align-items: center; gap: 10px; padding: 12px 14px; margin-bottom: 8px; }
+    .moment-card.music { border-color: #bfdbfe; background: #f0f6ff; }
+    .time-tag { font-size: 12px; font-weight: 700; color: #003366; background: #eff6ff; padding: 4px 10px; border-radius: 8px; min-width: 52px; text-align: center; flex-shrink: 0; }
+    .moment-card.music .time-tag { background: #dbeafe; }
+    .moment-info { flex: 1; min-width: 0; }
+    .moment-label { font-size: 13px; font-weight: 700; color: #001833; }
+    .moment-sub { display: flex; align-items: center; gap: 6px; margin-top: 3px; flex-wrap: wrap; }
+    .resp-chip  { font-size: 11px; font-weight: 600; color: #6b7280; background: #f3f4f6; padding: 2px 8px; border-radius: 6px; }
+    .music-chip { font-size: 11px; font-weight: 600; color: #003366; background: #dbeafe; padding: 2px 8px; border-radius: 6px; }
+    .note-chip  { font-size: 11px; color: #92400e; background: #fef3c7; padding: 2px 8px; border-radius: 6px; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .empty-state { text-align: center; padding: 40px 20px; color: #9ca3af; }
+    .empty-state p { font-size: 14px; margin-top: 8px; }
+
+    .refresh-hint { text-align: center; padding: 4px 0 16px; font-size: 11px; color: #d1d5db; }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-logo">⛪</div>
+  <h1>IASD Boa Vista</h1>
+  <p>Programa do Culto Sabatino</p>
+  <div class="hero-meta">
+    <span class="hero-pill">📅 <strong id="info-data">—</strong></span>
+    <span class="hero-pill">👤 <strong id="info-anciao">—</strong></span>
+  </div>
+</div>
+
+<div class="nav-section">
+  <h2>Acesso rápido</h2>
+  <div class="nav-cards">
+    <a class="nav-card card-adm" href="organizador-culto.html">
+      <span class="card-icon">⚙️</span>
+      <span class="card-label">ADM</span>
+      <span class="card-desc">Editar programa</span>
+    </a>
+    <a class="nav-card card-sono" href="sonoplastia.html">
+      <span class="card-icon">🎛️</span>
+      <span class="card-label">Sonoplastia</span>
+      <span class="card-desc">Músicas e som</span>
+    </a>
+    <a class="nav-card card-cer" href="cerimonial.html">
+      <span class="card-icon">🎙️</span>
+      <span class="card-label">Cerimonial</span>
+      <span class="card-desc">Checklist</span>
+    </a>
+  </div>
+</div>
+
+<div class="status-bar" id="status-bar">
+  <span id="status-text">Carregando...</span>
+  <button class="btn-refresh" onclick="fetchData()">↻ Atualizar</button>
+</div>
+
+<div class="prog-section">
+  <h2>Programa de hoje</h2>
+  <div id="container">
+    <div class="empty-state"><div style="font-size:40px;">📋</div><p>Aguardando dados...</p></div>
+  </div>
+  <div class="refresh-hint" id="refresh-hint"></div>
+</div>
+
+<script>
+  const BIN_ID = '6a076f2fadc21f119aa6cc4b';
+  const JB     = 'https://api.jsonbin.io/v3';
+  let refreshTimer, countdown = 60, countdownTimer;
+
+  function formatDate(s) { if (!s) return '—'; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
+
+  function setStatus(msg, cls='') {
+    document.getElementById('status-bar').className = 'status-bar '+cls;
+    document.getElementById('status-text').textContent = msg;
+  }
+
+  function startCountdown() {
+    clearInterval(countdownTimer);
+    countdown = 60;
+    countdownTimer = setInterval(() => {
+      countdown--;
+      document.getElementById('refresh-hint').textContent = `Atualização automática em ${countdown}s`;
+      if (countdown <= 0) clearInterval(countdownTimer);
+    }, 1000);
+  }
+
+  async function fetchData() {
+    setStatus('Atualizando...', 'load');
+    try {
+      const res = await fetch(`${JB}/b/${BIN_ID}/latest`);
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      const { record: data } = await res.json();
+      render(data);
+      const dt = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '—';
+      setStatus(`Atualizado às ${dt}`, 'ok');
+      startCountdown();
+    } catch(e) { setStatus('Erro ao carregar: '+e.message, 'err'); }
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(fetchData, 60000);
+  }
+
+  function render(data) {
+    document.getElementById('info-data').textContent   = formatDate(data.data);
+    document.getElementById('info-anciao').textContent = data.anciao || '—';
+
+    const container = document.getElementById('container');
+    container.innerHTML = '';
+
+    const culto = (data.cultoItems||[]).filter(i=>i.enabled);
+    const ss    = (data.ssItems||[]).filter(i=>i.enabled);
+
+    if (!culto.length && !ss.length) {
+      container.innerHTML = `<div class="empty-state"><div style="font-size:40px;">📭</div><p>Nenhum momento configurado.</p></div>`;
+      return;
+    }
+
+    if (culto.length) {
+      const t = document.createElement('div'); t.className='section-title'; t.textContent='Culto';
+      container.appendChild(t); culto.forEach(i=>container.appendChild(buildCard(i)));
+    }
+    if (ss.length) {
+      const t = document.createElement('div'); t.className='section-title'; t.style.marginTop='4px'; t.textContent='Escola Sabatina';
+      container.appendChild(t); ss.forEach(i=>container.appendChild(buildCard(i)));
+    }
+  }
+
+  function buildCard(item) {
+    const songs = (item.songs||[]).filter(s=>s&&s.trim());
+    const card = document.createElement('div');
+    card.className = 'moment-card'+(item.hasSongs?' music':'');
+    let sub = '';
+    if (item.resp) sub += `<span class="resp-chip">${esc(item.resp)}</span>`;
+    if (item.hasSongs && songs.length) sub += `<span class="music-chip">🎵 ${songs.length} música${songs.length>1?'s':''}</span>`;
+    if (item.note && !item.hasSongs) sub += `<span class="note-chip">💡 ${esc(item.note)}</span>`;
+    card.innerHTML = `
+      ${item.time?`<span class="time-tag">${esc(item.time)}</span>`:''}
+      <div class="moment-info">
+        <div class="moment-label">${esc(item.label)}</div>
+        ${sub?`<div class="moment-sub">${sub}</div>`:''}
+      </div>`;
+    return card;
+  }
+
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  fetchData();
+</script>
+</body>
+</html>
