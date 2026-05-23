@@ -383,6 +383,25 @@
 
 <footer>Desenvolvido por <strong style="color:var(--blue-deep);">Augusto Furtado</strong> &mdash; 2026</footer>
 
+<!-- Modal: Autenticação -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-header">
+      <h3>🔒 Área Administrativa</h3>
+      <button class="btn-close" onclick="closeAuthModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:#6b7280;">Digite a senha para acessar a edição.</p>
+      <input type="password" id="auth-password" placeholder="Senha..." style="width:100%;margin-top:6px;" onkeydown="if(event.key==='Enter')checkAuth()">
+      <div id="auth-error" style="font-size:12px;color:#ef4444;margin-top:8px;display:none;">Senha incorreta. Tente novamente.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeAuthModal()">Cancelar</button>
+      <button class="btn-add-custom" onclick="checkAuth()" style="border-radius:10px;padding:11px 22px;font-size:14px;">Entrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: Nuvem -->
 <div class="modal-overlay" id="cloud-modal">
   <div class="modal">
@@ -391,11 +410,6 @@
       <button class="btn-close" onclick="closeCloudModal()">✕</button>
     </div>
     <div class="modal-body">
-      <div>
-        <label class="field-label">Master Key</label>
-        <input type="password" id="jb-key" placeholder="$2b$10$..." style="width:100%;margin-top:6px;">
-        <p style="font-size:11px;color:#9ca3af;margin-top:5px;">Acesse <strong>jsonbin.io → API Keys</strong></p>
-      </div>
       <div>
         <label class="field-label">Bin ID <span style="font-weight:400;color:#9ca3af;">(gerado no primeiro salvamento)</span></label>
         <input type="text" id="jb-bid" placeholder="Automático" style="width:100%;margin-top:6px;" readonly>
@@ -475,6 +489,40 @@
   let isDirty = false;
   const newId = () => ++uid;
 
+  // ── Autenticação ───────────────────────────────────────
+  const ADMIN_PASS = 'boavista2026';
+  let isAuth = sessionStorage.getItem('adm-auth') === '1';
+  let pendingAction = null;
+
+  function requireAuth(action) {
+    if (isAuth) { action(); return; }
+    pendingAction = action;
+    document.getElementById('auth-error').style.display = 'none';
+    document.getElementById('auth-password').value = '';
+    document.getElementById('auth-modal').classList.add('open');
+    setTimeout(() => document.getElementById('auth-password').focus(), 100);
+  }
+  function checkAuth() {
+    if (document.getElementById('auth-password').value === ADMIN_PASS) {
+      isAuth = true;
+      sessionStorage.setItem('adm-auth', '1');
+      document.getElementById('auth-modal').classList.remove('open');
+      document.getElementById('auth-password').value = '';
+      if (pendingAction) { pendingAction(); pendingAction = null; }
+    } else {
+      document.getElementById('auth-error').style.display = 'block';
+      document.getElementById('auth-password').value = '';
+      document.getElementById('auth-password').focus();
+    }
+  }
+  function closeAuthModal() {
+    document.getElementById('auth-modal').classList.remove('open');
+    pendingAction = null;
+    // volta para home se tentou abrir configuração sem autenticar
+    const activeTab = document.querySelector('.tab-btn.active');
+    if (activeTab && activeTab.id === 'tab-culto') switchTabDirect('home');
+  }
+
   const SOM_DEFAULTS = [
     { icon: '💻', role: 'Computador',  nome: '' },
     { icon: '🎚️', role: 'Mesa de som', nome: '' },
@@ -523,12 +571,16 @@
   }
 
   // ── Tab switching ──────────────────────────────────────
-  function switchTab(name) {
+  function switchTabDirect(name) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
     document.getElementById('panel-' + name).classList.add('active');
     if (name === 'home') refreshHome();
+  }
+  function switchTab(name) {
+    if (name === 'culto') { requireAuth(() => switchTabDirect('culto')); return; }
+    switchTabDirect(name);
   }
 
   // ── Home: read-only refresh ────────────────────────────
@@ -879,6 +931,7 @@
 
   // ── JSONBin ────────────────────────────────────────────
   const JB        = 'https://api.jsonbin.io/v3';
+  const JB_KEY    = '$2a$10$WOoU0jMaqL94bo0lW9mF2eb6NN6bT7kHbn.ccLBEyZHyg3swTa7R2';
   const PAGES_URL = 'https://organizador-culto-iasd.pages.dev';
 
   function updateShareLinks(bid) {
@@ -894,17 +947,16 @@
     });
   }
   function openCloudModal() {
-    document.getElementById('jb-key').value = localStorage.getItem('jb-key') || '';
-    const bid = localStorage.getItem('jb-bid') || '';
-    document.getElementById('jb-bid').value = bid;
-    document.getElementById('cloud-status').textContent = '';
-    document.getElementById('cloud-status').style.color = '#6b7280';
-    updateShareLinks(bid);
-    document.getElementById('cloud-modal').classList.add('open');
+    requireAuth(() => {
+      const bid = localStorage.getItem('jb-bid') || '';
+      document.getElementById('jb-bid').value = bid;
+      document.getElementById('cloud-status').textContent = '';
+      document.getElementById('cloud-status').style.color = '#6b7280';
+      updateShareLinks(bid);
+      document.getElementById('cloud-modal').classList.add('open');
+    });
   }
   function closeCloudModal() {
-    const key = document.getElementById('jb-key').value.trim();
-    if (key) localStorage.setItem('jb-key', key);
     document.getElementById('cloud-modal').classList.remove('open');
   }
   function setCloudStatus(msg, color) {
@@ -942,9 +994,6 @@
   }
 
   async function saveToCloud() {
-    const key = document.getElementById('jb-key').value.trim();
-    if (!key) { setCloudStatus('Informe a Master Key.', '#ef4444'); return; }
-    localStorage.setItem('jb-key', key);
     setCloudStatus('Salvando...', '#d97706');
     try {
       let bid = localStorage.getItem('jb-bid') || '';
@@ -952,13 +1001,13 @@
       if (bid) {
         res = await fetch(`${JB}/b/${bid}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'X-Master-Key': key },
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': JB_KEY },
           body: JSON.stringify(buildPayload())
         });
       } else {
         res = await fetch(`${JB}/b`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Master-Key': key, 'X-Bin-Name': 'culto-iasd', 'X-Bin-Private': 'false' },
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': JB_KEY, 'X-Bin-Name': 'culto-iasd', 'X-Bin-Private': 'false' },
           body: JSON.stringify(buildPayload())
         });
         if (res.ok) {
@@ -980,14 +1029,11 @@
   }
 
   async function loadFromCloud() {
-    const key = document.getElementById('jb-key').value.trim();
     const bid = localStorage.getItem('jb-bid') || '';
-    if (!key) { setCloudStatus('Informe a Master Key.', '#ef4444'); return; }
-    if (!bid)  { setCloudStatus('Salve primeiro para criar o bin.', '#ef4444'); return; }
-    localStorage.setItem('jb-key', key);
+    if (!bid) { setCloudStatus('Salve primeiro para criar o bin.', '#ef4444'); return; }
     setCloudStatus('Carregando...', '#d97706');
     try {
-      const res = await fetch(`${JB}/b/${bid}/latest`, { headers: { 'X-Master-Key': key } });
+      const res = await fetch(`${JB}/b/${bid}/latest`, { headers: { 'X-Master-Key': JB_KEY } });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const { record: d } = await res.json();
       applyPayload(d);
@@ -1002,11 +1048,10 @@
   }
 
   async function tryAutoLoad() {
-    const key = localStorage.getItem('jb-key');
     const bid = localStorage.getItem('jb-bid');
-    if (!key || !bid) return;
+    if (!bid) return;
     try {
-      const res = await fetch(`${JB}/b/${bid}/latest`, { headers: { 'X-Master-Key': key } });
+      const res = await fetch(`${JB}/b/${bid}/latest`, { headers: { 'X-Master-Key': JB_KEY } });
       if (!res.ok) return;
       applyPayload((await res.json()).record);
       markClean();
