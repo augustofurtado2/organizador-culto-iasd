@@ -223,6 +223,45 @@
     .toast.error   { background: linear-gradient(135deg,#dc2626,#b91c1c); }
     .toast.warning { background: linear-gradient(135deg,#d97706,#b45309); }
 
+    /* ── UI24 Channel Map ── */
+    .ui24-group { margin-bottom: 22px; }
+    .ui24-group:last-child { margin-bottom: 0; }
+    .ui24-group-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; padding-bottom: 7px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
+    .ui24-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .ui24-ch { border-radius: 11px; padding: 9px 12px; display: flex; align-items: center; gap: 8px; border: 1.5px solid; transition: box-shadow .15s; }
+    .ui24-ch:hover { box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+    .ui24-num { font-size: 10px; font-weight: 800; min-width: 24px; height: 24px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ui24-info { flex: 1; min-width: 0; }
+    .ui24-name { font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ui24-lr { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 5px; flex-shrink: 0; }
+    .ui24-ico { font-size: 15px; flex-shrink: 0; }
+    /* instr */
+    .ui24-instr  { background: #fffbeb; border-color: #fde68a; }
+    .ui24-instr  .ui24-num { background: #fef3c7; color: #92400e; }
+    .ui24-instr  .ui24-lr  { background: #fde68a; color: #92400e; }
+    /* wireless */
+    .ui24-wireless { background: #fdf4ff; border-color: #e9d5ff; }
+    .ui24-wireless .ui24-num { background: #f3e8ff; color: #6b21a8; }
+    /* mic */
+    .ui24-mic { background: #eff6ff; border-color: #bfdbfe; }
+    .ui24-mic .ui24-num { background: #dbeafe; color: #1e3a8a; }
+    /* shure */
+    .ui24-shure { background: #f5f3ff; border-color: #c4b5fd; }
+    .ui24-shure .ui24-num { background: #ede9fe; color: #4c1d95; }
+    /* daw */
+    .ui24-daw { background: #f0fdf4; border-color: #bbf7d0; }
+    .ui24-daw .ui24-num { background: #dcfce7; color: #14532d; }
+    .ui24-daw .ui24-lr  { background: #bbf7d0; color: #14532d; }
+    /* off */
+    .ui24-off { background: #f9fafb; border-color: #f3f4f6; }
+    .ui24-off .ui24-num  { background: #f3f4f6; color: #d1d5db; }
+    .ui24-off .ui24-name { color: #d1d5db; }
+    .ui24-off .ui24-ico  { opacity: .25; }
+
+    /* ── UI24 mic name field ── */
+    .ui24-person { border: none; background: transparent; font-size: 11px; color: var(--blue-mid); font-family: inherit; font-weight: 600; padding: 0; width: 100%; margin-top: 3px; outline: none; display: block; }
+    .ui24-person::placeholder { color: #d1d5db; font-weight: 400; }
+
     /* ── Footer ── */
     footer { text-align: center; padding: 28px 16px; font-size: 12px; color: #9ca3af; font-weight: 500; }
 
@@ -374,10 +413,126 @@
 
 <!-- ═══════════════════════ UI24 ═══════════════════════ -->
 <div class="tab-panel" id="panel-ui24">
-  <div class="placeholder-tab">
-    <div class="ph-icon">🎵</div>
-    <h3>UI24</h3>
-    <p>Em breve — integração com a mesa de som UI24.</p>
+  <div class="container">
+    <div class="card">
+      <div class="card-header"><div class="card-icon amber">🎛️</div><h2>Mapa de Canais — Soundcraft UI24R</h2></div>
+
+      <!-- Instrumentos -->
+      <div class="ui24-group">
+        <div class="ui24-group-label">🎸 Instrumentos</div>
+        <div class="ui24-grid">
+          <div class="ui24-ch ui24-instr">
+            <div class="ui24-num">1</div><div class="ui24-info"><div class="ui24-name">DirectBox 1</div></div><div class="ui24-ico">🎸</div>
+          </div>
+          <div class="ui24-ch ui24-instr">
+            <div class="ui24-num">2</div><div class="ui24-info"><div class="ui24-name">DirectBox 2</div></div><div class="ui24-ico">🎸</div>
+          </div>
+          <div class="ui24-ch ui24-instr">
+            <div class="ui24-num">3</div><div class="ui24-info"><div class="ui24-name">Piano</div></div><div class="ui24-lr">L</div><div class="ui24-ico">🎹</div>
+          </div>
+          <div class="ui24-ch ui24-instr">
+            <div class="ui24-num">4</div><div class="ui24-info"><div class="ui24-name">Piano</div></div><div class="ui24-lr">R</div><div class="ui24-ico">🎹</div>
+          </div>
+          <div class="ui24-ch ui24-instr">
+            <div class="ui24-num">5</div><div class="ui24-info"><div class="ui24-name">Bateria Eletr.</div></div><div class="ui24-lr">L</div><div class="ui24-ico">🥁</div>
+          </div>
+          <div class="ui24-ch ui24-instr">
+            <div class="ui24-num">6</div><div class="ui24-info"><div class="ui24-name">Bateria Eletr.</div></div><div class="ui24-lr">R</div><div class="ui24-ico">🥁</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sem Fio -->
+      <div class="ui24-group">
+        <div class="ui24-group-label">📡 Sem Fio (AMW)</div>
+        <div class="ui24-grid">
+          <div class="ui24-ch ui24-wireless" id="ui24-ch-9">
+            <div class="ui24-num">9</div>
+            <div class="ui24-info"><div class="ui24-name">AMW Branco</div><input class="ui24-person" type="text" placeholder="Nome..." oninput="ui24Save()"></div>
+            <div class="ui24-ico">📡</div>
+          </div>
+          <div class="ui24-ch ui24-wireless" id="ui24-ch-10">
+            <div class="ui24-num">10</div>
+            <div class="ui24-info"><div class="ui24-name">AMW Preto</div><input class="ui24-person" type="text" placeholder="Nome..." oninput="ui24Save()"></div>
+            <div class="ui24-ico">📡</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Microfones -->
+      <div class="ui24-group">
+        <div class="ui24-group-label">🎤 Microfones</div>
+        <div class="ui24-grid">
+          <div class="ui24-ch ui24-mic" id="ui24-ch-11">
+            <div class="ui24-num">11</div>
+            <div class="ui24-info"><div class="ui24-name">Mic Azul</div><input class="ui24-person" type="text" placeholder="Nome..." oninput="ui24Save()"></div>
+            <div class="ui24-ico">🎤</div>
+          </div>
+          <div class="ui24-ch ui24-mic" id="ui24-ch-12">
+            <div class="ui24-num">12</div>
+            <div class="ui24-info"><div class="ui24-name">Mic Preto</div><input class="ui24-person" type="text" placeholder="Nome..." oninput="ui24Save()"></div>
+            <div class="ui24-ico">🎤</div>
+          </div>
+          <div class="ui24-ch ui24-mic" id="ui24-ch-13">
+            <div class="ui24-num">13</div>
+            <div class="ui24-info"><div class="ui24-name">Mic Laranja</div><input class="ui24-person" type="text" placeholder="Nome..." oninput="ui24Save()"></div>
+            <div class="ui24-ico">🎤</div>
+          </div>
+          <div class="ui24-ch ui24-mic" id="ui24-ch-14">
+            <div class="ui24-num">14</div>
+            <div class="ui24-info"><div class="ui24-name">Mic Verde Limão</div><input class="ui24-person" type="text" placeholder="Nome..." oninput="ui24Save()"></div>
+            <div class="ui24-ico">🎤</div>
+          </div>
+          <div class="ui24-ch ui24-shure" id="ui24-ch-15">
+            <div class="ui24-num">15</div>
+            <div class="ui24-info"><div class="ui24-name">Shure Pregador</div><input class="ui24-person" type="text" placeholder="Nome..." oninput="ui24Save()"></div>
+            <div class="ui24-ico">🎙️</div>
+          </div>
+          <div class="ui24-ch ui24-shure" id="ui24-ch-16">
+            <div class="ui24-num">16</div>
+            <div class="ui24-info"><div class="ui24-name">Shure Ministro</div><input class="ui24-person" type="text" placeholder="Nome..." oninput="ui24Save()"></div>
+            <div class="ui24-ico">🎙️</div>
+          </div>
+          <div class="ui24-ch ui24-mic" id="ui24-ch-17">
+            <div class="ui24-num">17</div>
+            <div class="ui24-info"><div class="ui24-name">Com Fio Branco</div><input class="ui24-person" type="text" placeholder="Nome..." oninput="ui24Save()"></div>
+            <div class="ui24-ico">🎤</div>
+          </div>
+          <div class="ui24-ch ui24-mic" id="ui24-ch-18">
+            <div class="ui24-num">18</div>
+            <div class="ui24-info"><div class="ui24-name">Com Fio Verde</div><input class="ui24-person" type="text" placeholder="Nome..." oninput="ui24Save()"></div>
+            <div class="ui24-ico">🎤</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PC / DAW -->
+      <div class="ui24-group">
+        <div class="ui24-group-label">💻 PC / DAW</div>
+        <div class="ui24-grid">
+          <div class="ui24-ch ui24-daw">
+            <div class="ui24-num">23</div><div class="ui24-info"><div class="ui24-name">PC via DAW</div></div><div class="ui24-lr">L</div><div class="ui24-ico">💻</div>
+          </div>
+          <div class="ui24-ch ui24-daw">
+            <div class="ui24-num">24</div><div class="ui24-info"><div class="ui24-name">PC via DAW</div></div><div class="ui24-lr">R</div><div class="ui24-ico">💻</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sem Uso -->
+      <div class="ui24-group">
+        <div class="ui24-group-label">— Sem Uso</div>
+        <div class="ui24-grid">
+          <div class="ui24-ch ui24-off"><div class="ui24-num">7</div><div class="ui24-info"><div class="ui24-name">Sem uso</div></div><div class="ui24-ico">—</div></div>
+          <div class="ui24-ch ui24-off"><div class="ui24-num">8</div><div class="ui24-info"><div class="ui24-name">Sem uso</div></div><div class="ui24-ico">—</div></div>
+          <div class="ui24-ch ui24-off"><div class="ui24-num">19</div><div class="ui24-info"><div class="ui24-name">Sem uso</div></div><div class="ui24-ico">—</div></div>
+          <div class="ui24-ch ui24-off"><div class="ui24-num">20</div><div class="ui24-info"><div class="ui24-name">Sem uso</div></div><div class="ui24-ico">—</div></div>
+          <div class="ui24-ch ui24-off"><div class="ui24-num">21</div><div class="ui24-info"><div class="ui24-name">Sem uso</div></div><div class="ui24-ico">—</div></div>
+          <div class="ui24-ch ui24-off"><div class="ui24-num">22</div><div class="ui24-info"><div class="ui24-name">Sem uso</div></div><div class="ui24-ico">—</div></div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -1138,8 +1293,31 @@
     markClean();
   }
 
+  // ── UI24 Mic Names ─────────────────────────────────────
+  const UI24_MICS = [9,10,11,12,13,14,15,16,17,18];
+
+  function ui24Save() {
+    const state = {};
+    UI24_MICS.forEach(ch => {
+      const card = document.getElementById('ui24-ch-' + ch);
+      if (card) state[ch] = card.querySelector('.ui24-person').value;
+    });
+    localStorage.setItem('ui24-mic-state', JSON.stringify(state));
+  }
+
+  function ui24Load() {
+    try {
+      const state = JSON.parse(localStorage.getItem('ui24-mic-state') || '{}');
+      UI24_MICS.forEach(ch => {
+        const card = document.getElementById('ui24-ch-' + ch);
+        if (card && state[ch] !== undefined) card.querySelector('.ui24-person').value = state[ch];
+      });
+    } catch(e) {}
+  }
+
   init();
   tryAutoLoad();
+  ui24Load();
 </script>
 </body>
 </html>
