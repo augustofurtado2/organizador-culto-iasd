@@ -6,260 +6,382 @@
   <title>Organizador de Culto — IASD Boa Vista</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --blue-deep: #003366;
+      --blue-mid:  #0056a0;
+      --blue-light:#e8f2fc;
+      --blue-xlight:#f0f6fb;
+      --border:    #e5e7eb;
+      --text-main: #001833;
+      --text-muted:#6b7280;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', 'Segoe UI', sans-serif; background: linear-gradient(145deg, #e8f2fc 0%, #f0f6fb 40%, #e4effa 100%); color: #001833; min-height: 100vh; }
+    body { font-family: 'Inter','Segoe UI',sans-serif; background: linear-gradient(145deg,#e8f2fc 0%,#f0f6fb 40%,#e4effa 100%); color: var(--text-main); min-height: 100vh; }
 
-    header { background: white; padding: 14px 28px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 20px rgba(0,51,102,.08); position: sticky; top: 0; z-index: 10; }
-    .logo-divider { width: 1px; height: 32px; background: #e5e7eb; flex-shrink: 0; }
-    header h1 { font-size: 18px; font-weight: 800; color: #003366; }
-    header p  { font-size: 11px; color: #6b7280; margin-top: 1px; font-weight: 500; }
-    .header-nav { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-    .nav-link { display: flex; align-items: center; gap: 6px; text-decoration: none; font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 10px; transition: all .15s; }
-    .nav-link.sono { background: #1e2d45; color: #93c5fd; }
-    .nav-link.sono:hover { background: #1e3a5f; }
-    .nav-link.cer  { background: #003366; color: white; }
-    .nav-link.cer:hover  { background: #002244; }
-    .btn-cloud { background: #e8f2fc; border: 1.5px solid #b3ccde; border-radius: 10px; font-size: 17px; cursor: pointer; padding: 7px 12px; transition: all .2s; }
-    .btn-cloud:hover { background: #d6e8f5; border-color: #003366; }
-    .header-badge { background: linear-gradient(135deg, #003366, #0056a0); color: white; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
+    /* ── Header ── */
+    header { background: rgba(255,255,255,.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,51,102,.1); position: sticky; top: 0; z-index: 50; }
+    .header-top { display: flex; align-items: center; gap: 14px; padding: 12px 24px; }
+    .header-top h1 { font-size: 17px; font-weight: 800; color: var(--blue-deep); }
+    .header-top p  { font-size: 11px; color: var(--text-muted); margin-top: 1px; font-weight: 500; }
+    .header-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .btn-cloud { position: relative; background: var(--blue-light); border: 1.5px solid #b3ccde; border-radius: var(--radius-sm); font-size: 17px; cursor: pointer; padding: 7px 12px; transition: all .2s; }
+    .btn-cloud:hover { background: #d6e8f5; border-color: var(--blue-deep); }
+    .unsaved-dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: #f97316; border-radius: 50%; border: 1.5px solid white; display: none; }
+    .unsaved-dot.show { display: block; }
+    .header-badge { background: linear-gradient(135deg,var(--blue-deep),var(--blue-mid)); color: white; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px; }
 
+    /* ── Tab Bar ── */
+    .tab-bar { display: flex; gap: 2px; padding: 0 24px 0; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+    .tab-bar::-webkit-scrollbar { display: none; }
+    .tab-btn { flex-shrink: 0; background: none; border: none; border-bottom: 3px solid transparent; padding: 10px 16px; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap; }
+    .tab-btn:hover { color: var(--blue-deep); background: var(--blue-light); border-radius: 8px 8px 0 0; }
+    .tab-btn.active { color: var(--blue-deep); border-bottom-color: var(--blue-deep); font-weight: 700; }
+
+    /* ── Tab Panels ── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Container ── */
     .container { max-width: 900px; margin: 28px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 18px; }
 
-    .card { background: white; border-radius: 20px; box-shadow: 0 4px 24px rgba(0,51,102,.07), 0 1px 4px rgba(0,0,0,.04); padding: 26px; border: 1px solid rgba(0,51,102,.08); }
+    /* ── Cards ── */
+    .card { background: white; border-radius: var(--radius-lg); box-shadow: 0 4px 24px rgba(0,51,102,.07),0 1px 4px rgba(0,0,0,.04); padding: 26px; border: 1px solid rgba(0,51,102,.08); }
     .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-    .card-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .card-icon { width: 34px; height: 34px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 16px; }
     .card-icon.blue   { background: #eff6ff; }
     .card-icon.purple { background: #f0e8ff; }
     .card-icon.green  { background: #f0fdf4; }
     .card-icon.amber  { background: #fffbeb; }
-    .card h2 { font-size: 15px; font-weight: 700; color: #003366; }
+    .card h2 { font-size: 15px; font-weight: 700; color: var(--blue-deep); }
 
+    /* ── Form Fields ── */
     .info-row { display: flex; gap: 14px; flex-wrap: wrap; }
     .info-row .field { flex: 1; min-width: 130px; }
     .field-label { display: block; font-size: 10px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
-    input[type="text"], input[type="date"] { width: 100%; padding: 10px 13px; border: 1.5px solid #e5e7eb; border-radius: 11px; font-size: 13px; font-family: inherit; color: #001833; background: #fafafa; transition: all .2s; }
+    input[type="text"], input[type="date"] { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 11px; font-size: 13px; font-family: inherit; color: var(--text-main); background: #fafafa; transition: all .2s; }
     input:focus { outline: none; border-color: #003f8c; background: white; box-shadow: 0 0 0 3px rgba(0,51,102,.1); }
     input:disabled { opacity: .35; }
     input::placeholder { color: #d1d5db; }
 
     /* ── Equipe de Som ── */
     .som-grid { display: flex; flex-direction: column; gap: 8px; }
-    .som-row { display: flex; align-items: center; gap: 10px; background: #fafafa; border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 10px 14px; transition: border-color .2s; }
+    .som-row { display: flex; align-items: center; gap: 10px; background: #fafafa; border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 14px; transition: border-color .2s; }
     .som-row:focus-within { border-color: #b3ccde; background: white; }
     .som-role-icon { font-size: 18px; flex-shrink: 0; width: 28px; text-align: center; }
-    .som-role-label { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .5px; width: 110px; flex-shrink: 0; }
-    .som-row input { flex: 1; border: none; background: transparent; padding: 0; font-size: 13px; font-weight: 600; color: #001833; }
+    .som-role-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; width: 110px; flex-shrink: 0; }
+    .som-row input { flex: 1; border: none; background: transparent; padding: 0; font-size: 13px; font-weight: 600; color: var(--text-main); }
     .som-row input:focus { outline: none; box-shadow: none; }
     .som-row input::placeholder { color: #d1d5db; font-weight: 400; }
     .btn-rm-som { background: none; border: none; color: #fca5a5; font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 6px; transition: all .15s; flex-shrink: 0; }
     .btn-rm-som:hover { background: #fef2f2; color: #ef4444; }
-    .btn-add-som { font-size: 12px; font-weight: 600; color: #003366; background: white; border: 1.5px dashed #a3c4db; border-radius: 10px; padding: 8px 14px; cursor: pointer; margin-top: 4px; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-add-som:hover { background: #e8f2fc; border-color: #003366; }
+    .btn-add-som { font-size: 12px; font-weight: 600; color: var(--blue-deep); background: white; border: 1.5px dashed #a3c4db; border-radius: var(--radius-sm); padding: 8px 14px; cursor: pointer; margin-top: 4px; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-add-som:hover { background: var(--blue-light); border-color: var(--blue-deep); }
 
     /* ── Toggle ── */
     .toggle-wrap { display: flex; align-items: center; flex-shrink: 0; }
     .toggle-wrap input[type="checkbox"] { display: none; }
-    .toggle-track { width: 42px; height: 24px; background: #e5e7eb; border-radius: 24px; position: relative; cursor: pointer; transition: background .25s; }
+    .toggle-track { width: 42px; height: 24px; background: var(--border); border-radius: 24px; position: relative; cursor: pointer; transition: background .25s; }
     .toggle-track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: transform .25s; box-shadow: 0 2px 6px rgba(0,0,0,.18); }
-    .toggle-wrap input:checked + .toggle-track { background: linear-gradient(135deg, #003366, #0056a0); }
+    .toggle-wrap input:checked + .toggle-track { background: linear-gradient(135deg,var(--blue-deep),var(--blue-mid)); }
     .toggle-wrap input:checked + .toggle-track::after { transform: translateX(18px); }
 
-    /* ── Moment cards ── */
+    /* ── Moment Cards ── */
     .moments-list { display: flex; flex-direction: column; gap: 8px; }
-    .moment-item { border: 1.5px solid #f3f4f6; border-radius: 14px; overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+    .moment-item { border: 1.5px solid #f3f4f6; border-radius: var(--radius-md); overflow: hidden; transition: border-color .15s,box-shadow .15s; }
     .moment-item.on { border-color: #b3ccde; box-shadow: 0 2px 12px rgba(0,51,102,.08); }
     .moment-item.dragging { opacity: .35; }
-    .moment-item.drag-over { border-color: #003366 !important; border-style: dashed; box-shadow: 0 0 0 3px rgba(0,51,102,.18) !important; }
+    .moment-item.drag-over { border-color: var(--blue-deep) !important; border-style: dashed; box-shadow: 0 0 0 3px rgba(0,51,102,.18) !important; }
     .moment-row { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: #fafafa; }
-    .moment-item.on .moment-row { background: linear-gradient(135deg, #f5f9fd, #e8f2fc); }
-
-    .drag-handle { font-size: 16px; color: #d1d5db; cursor: grab; user-select: none; flex-shrink: 0; padding: 2px 4px; border-radius: 6px; transition: color .15s, background .15s; line-height: 1; }
-    .drag-handle:hover { color: #003366; background: #dceaf5; }
+    .moment-item.on .moment-row { background: linear-gradient(135deg,#f5f9fd,var(--blue-light)); }
+    .drag-handle { font-size: 16px; color: #d1d5db; cursor: grab; user-select: none; flex-shrink: 0; padding: 2px 4px; border-radius: 6px; transition: color .15s,background .15s; line-height: 1; }
+    .drag-handle:hover { color: var(--blue-deep); background: #dceaf5; }
     .drag-handle:active { cursor: grabbing; }
-
     .moment-name { flex: 1; font-size: 12px; font-weight: 700; color: #9ca3af; letter-spacing: .4px; min-width: 0; }
-    .moment-item.on .moment-name { color: #003366; }
-    .music-badge { font-size: 10px; font-weight: 700; background: linear-gradient(135deg, #003366, #0056a0); color: white; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .moment-item.on .moment-name { color: var(--blue-deep); }
+    .music-badge { font-size: 10px; font-weight: 700; background: linear-gradient(135deg,var(--blue-deep),var(--blue-mid)); color: white; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
     .moment-fields { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
-
-    .time-badge { min-width: 44px; text-align: center; font-size: 12px; font-weight: 700; color: #003366; background: #dceaf5; padding: 5px 7px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
+    .time-badge { min-width: 44px; text-align: center; font-size: 12px; font-weight: 700; color: var(--blue-deep); background: #dceaf5; padding: 5px 7px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
     .moment-item:not(.on) .time-badge { color: #b0bec5; background: #f3f4f6; }
-
-    .inp-dur { width: 50px; text-align: center; font-size: 12px; font-weight: 600; padding: 6px 4px; border-radius: 10px; border: 1.5px solid #e5e7eb; background: white; font-family: inherit; color: #001833; transition: all .2s; }
+    .inp-dur { width: 50px; text-align: center; font-size: 12px; font-weight: 600; padding: 6px 4px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: white; font-family: inherit; color: var(--text-main); transition: all .2s; }
     .inp-dur:focus { outline: none; border-color: #003f8c; box-shadow: 0 0 0 3px rgba(0,51,102,.1); }
     .inp-dur:disabled { opacity: .35; }
     .dur-label { font-size: 10px; color: #b0bec5; font-weight: 600; flex-shrink: 0; }
-
-    .inp-resp { width: 130px; font-size: 12px; padding: 7px 10px; border-radius: 10px; }
+    .inp-resp { width: 130px; font-size: 12px; padding: 7px 10px; border-radius: var(--radius-sm); }
     .btn-remove-item { background: none; border: none; color: #fca5a5; font-size: 16px; cursor: pointer; padding: 3px 7px; border-radius: 7px; transition: all .15s; flex-shrink: 0; }
     .btn-remove-item:hover { background: #fef2f2; color: #ef4444; }
 
     /* ── Song expand ── */
-    .moment-expand { padding: 12px 14px 14px; border-top: 1px solid #d6e8f5; background: linear-gradient(180deg, #f5f9fd, #e8f2fc); display: none; }
+    .moment-expand { padding: 12px 14px 14px; border-top: 1px solid #d6e8f5; background: linear-gradient(180deg,#f5f9fd,var(--blue-light)); display: none; }
     .moment-item.on .moment-expand { display: block; }
     .song-list { display: flex; flex-direction: column; gap: 6px; }
     .song-row { display: flex; gap: 7px; align-items: center; }
-    .song-row input { flex: 1; padding: 7px 11px; font-size: 13px; border-radius: 10px; border: 1.5px solid #c0d8ed; background: white; }
+    .song-row input { flex: 1; padding: 7px 11px; font-size: 13px; border-radius: var(--radius-sm); border: 1.5px solid #c0d8ed; background: white; }
     .song-row input:focus { border-color: #003f8c; box-shadow: 0 0 0 3px rgba(0,51,102,.1); }
     .btn-rm-song { background: none; border: none; color: #a3bcd4; font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 6px; transition: all .15s; }
     .btn-rm-song:hover { background: #fef2f2; color: #ef4444; }
-    .btn-add-song { font-size: 12px; font-weight: 600; color: #003366; background: white; border: 1.5px dashed #a3c4db; border-radius: 10px; padding: 7px 14px; cursor: pointer; margin-top: 4px; transition: all .2s; display: inline-block; }
-    .btn-add-song:hover { background: #e8f2fc; border-color: #003366; }
-    .note-input { width: 100%; margin-top: 8px; font-size: 12px !important; color: #9ca3af !important; font-style: italic; border: 1.5px solid #d6e8f5 !important; border-radius: 10px !important; background: white !important; padding: 7px 11px !important; }
+    .btn-add-song { font-size: 12px; font-weight: 600; color: var(--blue-deep); background: white; border: 1.5px dashed #a3c4db; border-radius: var(--radius-sm); padding: 7px 14px; cursor: pointer; margin-top: 4px; transition: all .2s; display: inline-block; }
+    .btn-add-song:hover { background: var(--blue-light); border-color: var(--blue-deep); }
+    .note-input { width: 100%; margin-top: 8px; font-size: 12px !important; color: #9ca3af !important; font-style: italic; border: 1.5px solid #d6e8f5 !important; border-radius: var(--radius-sm) !important; background: white !important; padding: 7px 11px !important; }
     .note-input:focus { outline: none; border-color: #003f8c !important; box-shadow: 0 0 0 3px rgba(0,51,102,.08) !important; }
 
     /* ── Add panel ── */
     .add-panel { margin-top: 10px; }
-    .add-trigger { background: white; border: 1.5px dashed #a3c4db; border-radius: 12px; padding: 10px 20px; font-size: 13px; font-weight: 600; color: #003366; cursor: pointer; width: 100%; text-align: center; transition: all .2s; }
-    .add-trigger:hover { background: #e8f2fc; border-color: #003366; }
-    .add-options { display: none; margin-top: 8px; background: #fafafa; border: 1.5px solid #e5e7eb; border-radius: 14px; padding: 14px; }
+    .add-trigger { background: white; border: 1.5px dashed #a3c4db; border-radius: 12px; padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--blue-deep); cursor: pointer; width: 100%; text-align: center; transition: all .2s; }
+    .add-trigger:hover { background: var(--blue-light); border-color: var(--blue-deep); }
+    .add-options { display: none; margin-top: 8px; background: #fafafa; border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 14px; }
     .add-options.open { display: block; }
     .preset-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-    .btn-preset { background: white; border: 1.5px solid #e5e7eb; border-radius: 10px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; color: #374151; transition: all .2s; }
-    .btn-preset:hover { border-color: #003366; color: #003366; background: #e8f2fc; }
+    .btn-preset { background: white; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; color: #374151; transition: all .2s; }
+    .btn-preset:hover { border-color: var(--blue-deep); color: var(--blue-deep); background: var(--blue-light); }
     .custom-row { display: flex; gap: 8px; }
-    .custom-row input { flex: 1; padding: 9px 13px; font-size: 13px; border-radius: 10px; }
-    .btn-add-custom { background: linear-gradient(135deg, #003366, #0056a0); color: white; border: none; border-radius: 10px; padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; box-shadow: 0 4px 12px rgba(0,51,102,.3); transition: opacity .2s; }
+    .custom-row input { flex: 1; padding: 9px 13px; font-size: 13px; border-radius: var(--radius-sm); }
+    .btn-add-custom { background: linear-gradient(135deg,var(--blue-deep),var(--blue-mid)); color: white; border: none; border-radius: var(--radius-sm); padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; box-shadow: 0 4px 12px rgba(0,51,102,.3); transition: opacity .2s; }
     .btn-add-custom:hover { opacity: .9; }
 
     /* ── Actions ── */
     .actions { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn-primary { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 14px; padding: 14px 24px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 9px; box-shadow: 0 6px 20px rgba(34,197,94,.3); transition: transform .15s, box-shadow .15s; flex: 1; justify-content: center; }
+    .btn-primary { background: linear-gradient(135deg,#22c55e,#16a34a); color: white; border: none; border-radius: var(--radius-md); padding: 14px 24px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 9px; box-shadow: 0 6px 20px rgba(34,197,94,.3); transition: transform .15s,box-shadow .15s; flex: 1; justify-content: center; }
     .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(34,197,94,.35); }
-    .btn-secondary { background: white; color: #003366; border: 1.5px solid #b3ccde; border-radius: 14px; padding: 14px 24px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: all .2s; flex: 1; justify-content: center; }
-    .btn-secondary:hover { background: #e8f2fc; border-color: #003366; }
+    .btn-secondary { background: white; color: var(--blue-deep); border: 1.5px solid #b3ccde; border-radius: var(--radius-md); padding: 14px 24px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; transition: all .2s; flex: 1; justify-content: center; }
+    .btn-secondary:hover { background: var(--blue-light); border-color: var(--blue-deep); }
+
+    /* ── Home Panel ── */
+    .home-info-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    .home-chip { display: flex; align-items: center; gap: 7px; background: white; border: 1.5px solid #e0ecf8; border-radius: 30px; padding: 6px 14px; font-size: 12px; font-weight: 600; color: var(--text-main); box-shadow: 0 1px 4px rgba(0,51,102,.06); }
+    .home-chip .chip-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+    .home-section { background: white; border-radius: var(--radius-lg); box-shadow: 0 4px 24px rgba(0,51,102,.07); padding: 24px; border: 1px solid rgba(0,51,102,.08); margin-bottom: 16px; }
+    .home-section h3 { font-size: 14px; font-weight: 800; color: var(--blue-deep); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .tl-item { display: flex; gap: 14px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+    .tl-item:last-child { border-bottom: none; }
+    .tl-time { min-width: 44px; font-size: 12px; font-weight: 700; color: var(--blue-deep); background: #dceaf5; padding: 4px 7px; border-radius: 8px; text-align: center; flex-shrink: 0; }
+    .tl-body { flex: 1; }
+    .tl-label { font-size: 13px; font-weight: 700; color: var(--text-main); }
+    .tl-resp { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .tl-songs { margin-top: 5px; display: flex; flex-direction: column; gap: 2px; }
+    .tl-song { font-size: 11px; color: #4b7bb5; font-weight: 500; }
+    .tl-note { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 3px; }
+    .home-empty { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 13px; }
+    .btn-goto-culto { background: linear-gradient(135deg,var(--blue-deep),var(--blue-mid)); color: white; border: none; border-radius: var(--radius-sm); padding: 10px 20px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 14px; box-shadow: 0 4px 12px rgba(0,51,102,.25); transition: opacity .2s; }
+    .btn-goto-culto:hover { opacity: .9; }
+
+    /* ── Placeholder Tabs ── */
+    .placeholder-tab { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; gap: 16px; color: var(--text-muted); text-align: center; padding: 40px 20px; }
+    .placeholder-tab .ph-icon { font-size: 56px; opacity: .4; }
+    .placeholder-tab h3 { font-size: 18px; font-weight: 700; color: var(--blue-deep); opacity: .6; }
+    .placeholder-tab p { font-size: 13px; max-width: 280px; line-height: 1.6; }
 
     /* ── Modal ── */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,10,40,.45); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.open { display: flex; }
     .modal { background: white; border-radius: 22px; width: 100%; max-width: 540px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 30px 80px rgba(0,51,102,.25); }
     .modal-header { padding: 20px 24px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
-    .modal-header h3 { font-size: 16px; font-weight: 800; color: #003366; }
-    .btn-close { background: #f3f4f6; border: none; font-size: 16px; cursor: pointer; color: #6b7280; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .modal-header h3 { font-size: 16px; font-weight: 800; color: var(--blue-deep); }
+    .btn-close { background: #f3f4f6; border: none; font-size: 16px; cursor: pointer; color: var(--text-muted); width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
     .btn-close:hover { background: #fee2e2; color: #ef4444; }
     .modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 14px; }
     .modal-footer { padding: 16px 24px; border-top: 1px solid #f3f4f6; display: flex; gap: 10px; }
-
-    .btn-save-cloud { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 10px; padding: 11px 20px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; font-family: inherit; box-shadow: 0 4px 12px rgba(34,197,94,.3); transition: opacity .2s; }
+    .btn-save-cloud { background: linear-gradient(135deg,#22c55e,#16a34a); color: white; border: none; border-radius: var(--radius-sm); padding: 11px 20px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; font-family: inherit; box-shadow: 0 4px 12px rgba(34,197,94,.3); transition: opacity .2s; }
     .btn-save-cloud:hover { opacity: .9; }
-    .btn-load-cloud { background: white; color: #003366; border: 1.5px solid #b3ccde; border-radius: 10px; padding: 11px 20px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; font-family: inherit; transition: all .2s; }
-    .btn-load-cloud:hover { background: #e8f2fc; }
-    .server-status { font-size: 13px; color: #6b7280; text-align: center; min-height: 20px; }
+    .btn-load-cloud { background: white; color: var(--blue-deep); border: 1.5px solid #b3ccde; border-radius: var(--radius-sm); padding: 11px 20px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; font-family: inherit; transition: all .2s; }
+    .btn-load-cloud:hover { background: var(--blue-light); }
+    .server-status { font-size: 13px; color: var(--text-muted); text-align: center; min-height: 20px; }
     .share-link-row { display: flex; gap: 6px; align-items: center; }
-    .share-link-code { flex: 1; background: #f3f4f6; padding: 6px 10px; border-radius: 8px; font-size: 11px; color: #003366; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'Courier New', monospace; }
-    .btn-copy-link { background: #003366; color: white; border: none; border-radius: 8px; padding: 6px 10px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; transition: background .2s; }
+    .share-link-code { flex: 1; background: #f3f4f6; padding: 6px 10px; border-radius: 8px; font-size: 11px; color: var(--blue-deep); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'Courier New',monospace; }
+    .btn-copy-link { background: var(--blue-deep); color: white; border: none; border-radius: 8px; padding: 6px 10px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; transition: background .2s; }
     .btn-copy-link:hover { background: #002244; }
-
-    .preview-box { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 14px; padding: 16px; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.8; white-space: pre-wrap; word-break: break-word; color: #166534; }
-    .btn-copy-msg { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; border-radius: 10px; padding: 11px 22px; font-size: 14px; font-weight: 700; cursor: pointer; flex: 1; font-family: inherit; box-shadow: 0 4px 12px rgba(34,197,94,.3); transition: opacity .2s; }
+    .preview-box { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: var(--radius-md); padding: 16px; font-family: 'Courier New',monospace; font-size: 12px; line-height: 1.8; white-space: pre-wrap; word-break: break-word; color: #166534; }
+    .btn-copy-msg { background: linear-gradient(135deg,#22c55e,#16a34a); color: white; border: none; border-radius: var(--radius-sm); padding: 11px 22px; font-size: 14px; font-weight: 700; cursor: pointer; flex: 1; font-family: inherit; box-shadow: 0 4px 12px rgba(34,197,94,.3); transition: opacity .2s; }
     .btn-copy-msg:hover { opacity: .9; }
-    .btn-copy-msg.copied { background: linear-gradient(135deg, #003366, #0056a0); box-shadow: 0 4px 12px rgba(0,51,102,.3); }
-    .btn-cancel { background: #f9fafb; color: #6b7280; border: 1.5px solid #e5e7eb; border-radius: 10px; padding: 11px 22px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .btn-copy-msg.copied { background: linear-gradient(135deg,var(--blue-deep),var(--blue-mid)); box-shadow: 0 4px 12px rgba(0,51,102,.3); }
+    .btn-cancel { background: #f9fafb; color: var(--text-muted); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 11px 22px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
     .btn-cancel:hover { background: #f3f4f6; }
 
     /* ── Music Picker ── */
     .music-modal { max-width: 600px; }
     .music-search-wrap { position: relative; }
-    .music-search { width: 100%; padding: 11px 14px 11px 38px; border: 1.5px solid #e5e7eb; border-radius: 12px; font-size: 14px; font-family: inherit; background: #fafafa; }
+    .music-search { width: 100%; padding: 11px 14px 11px 38px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 14px; font-family: inherit; background: #fafafa; }
     .music-search:focus { outline: none; border-color: #003f8c; background: white; box-shadow: 0 0 0 3px rgba(0,51,102,.1); }
     .music-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; }
     .music-results { flex: 1; overflow-y: auto; max-height: 380px; display: flex; flex-direction: column; gap: 2px; }
-    .music-item { padding: 10px 14px; border-radius: 10px; cursor: pointer; transition: background .1s; display: flex; flex-direction: column; gap: 2px; }
+    .music-item { padding: 10px 14px; border-radius: var(--radius-sm); cursor: pointer; transition: background .1s; display: flex; flex-direction: column; gap: 2px; }
     .music-item:hover { background: #eff6ff; }
-    .music-item-name { font-size: 13px; font-weight: 600; color: #001833; }
+    .music-item-name { font-size: 13px; font-weight: 600; color: var(--text-main); }
     .music-item-album { font-size: 11px; color: #9ca3af; }
     .music-empty { text-align: center; padding: 32px; color: #9ca3af; font-size: 13px; }
     .music-count { font-size: 11px; color: #9ca3af; text-align: right; padding: 2px 0; }
-    .btn-pick-music { background: #eff6ff; border: 1.5px solid #bfdbfe; color: #003366; border-radius: 8px; font-size: 13px; cursor: pointer; padding: 4px 9px; flex-shrink: 0; transition: all .15s; line-height: 1; }
-    .btn-pick-music:hover { background: #dbeafe; border-color: #003366; }
+    .btn-pick-music { background: #eff6ff; border: 1.5px solid #bfdbfe; color: var(--blue-deep); border-radius: 8px; font-size: 13px; cursor: pointer; padding: 4px 9px; flex-shrink: 0; transition: all .15s; line-height: 1; }
+    .btn-pick-music:hover { background: #dbeafe; border-color: var(--blue-deep); }
+
+    /* ── Toast ── */
+    #toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+    .toast { background: #1e293b; color: white; padding: 11px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.25); opacity: 0; transform: translateY(16px); transition: all .3s cubic-bezier(.34,1.56,.64,1); pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: linear-gradient(135deg,#16a34a,#15803d); }
+    .toast.error   { background: linear-gradient(135deg,#dc2626,#b91c1c); }
+    .toast.warning { background: linear-gradient(135deg,#d97706,#b45309); }
+
+    /* ── Footer ── */
+    footer { text-align: center; padding: 28px 16px; font-size: 12px; color: #9ca3af; font-weight: 500; }
+
+    /* ── Mobile ── */
+    @media (max-width: 600px) {
+      .header-top { padding: 10px 16px; }
+      .header-top h1 { font-size: 15px; }
+      .tab-btn { padding: 10px 10px; font-size: 11px; }
+      .container { padding: 0 12px; margin: 16px auto; gap: 12px; }
+      .card { padding: 18px; }
+      .info-row { flex-direction: column; gap: 10px; }
+      .info-row .field { min-width: 100%; }
+      .moment-row { flex-wrap: wrap; }
+      .moment-fields { flex-wrap: wrap; }
+      .inp-resp { width: 100%; }
+      .actions { flex-direction: column; }
+      .btn-primary, .btn-secondary { flex: none; }
+    }
   </style>
 </head>
 <body>
 
+<div id="toast-container"></div>
+
 <header>
-  <div><h1>⛪ IASD Boa Vista</h1><p>Organizador de Culto Sabatino</p></div>
-  <div class="logo-divider"></div>
-  <div class="header-nav">
-    <a class="nav-link sono" href="sonoplastia.html">🎛️ Sonoplastia</a>
-    <a class="nav-link cer"  href="cerimonial.html">🎙️ Cerimonial</a>
-    <button class="btn-cloud" onclick="openCloudModal()" title="Nuvem JSONBin">☁️</button>
-    <span class="header-badge">ADM</span>
+  <div class="header-top">
+    <div><h1>⛪ IASD Boa Vista</h1><p>Organizador de Culto Sabatino</p></div>
+    <div class="header-actions">
+      <button class="btn-cloud" onclick="openCloudModal()" title="Nuvem JSONBin">
+        ☁️<span class="unsaved-dot" id="unsaved-dot"></span>
+      </button>
+      <span class="header-badge">ADM</span>
+    </div>
   </div>
+  <nav class="tab-bar">
+    <button class="tab-btn active" id="tab-home"        onclick="switchTab('home')">🏠 Home</button>
+    <button class="tab-btn"        id="tab-culto"       onclick="switchTab('culto')">📅 Configuração</button>
+    <button class="tab-btn"        id="tab-sonoplastia" onclick="switchTab('sonoplastia')">🎛️ Sonoplastia</button>
+    <button class="tab-btn"        id="tab-cerimonial"  onclick="switchTab('cerimonial')">🎙️ Cerimonial</button>
+    <button class="tab-btn"        id="tab-ui24"        onclick="switchTab('ui24')">🎵 UI24</button>
+  </nav>
 </header>
 
-<div class="container">
-
-  <!-- Configuração do Culto -->
-  <div class="card">
-    <div class="card-header"><div class="card-icon blue">📅</div><h2>Configuração do Culto</h2></div>
-    <div class="info-row">
-      <div class="field"><label class="field-label">Data do Culto</label><input type="date" id="data-culto"></div>
-      <div class="field"><label class="field-label">Início do Culto</label><input type="text" id="horario-culto" placeholder="9:30" value="9:30" oninput="recalcAll()"></div>
-      <div class="field"><label class="field-label">Início Esc. Sabatina</label><input type="text" id="horario-ss" placeholder="11:15" value="11:15" oninput="recalcAll()"></div>
-      <div class="field"><label class="field-label">Ancião do Dia</label><input type="text" id="anciao" placeholder="Nome do ancião"></div>
-      <div class="field"><label class="field-label">Líder Cerimonial</label><input type="text" id="lider-cerimonial" placeholder="Responsável"></div>
+<!-- ═══════════════════════ HOME ═══════════════════════ -->
+<div class="tab-panel active" id="panel-home">
+  <div class="container">
+    <div class="home-info-bar" id="home-info-bar">
+      <div class="home-chip"><span class="chip-label">Data</span><span id="home-data">—</span></div>
+      <div class="home-chip"><span class="chip-label">Ancião</span><span id="home-anciao">—</span></div>
+      <div class="home-chip"><span class="chip-label">Cerimonial</span><span id="home-lider">—</span></div>
+      <div class="home-chip" id="home-som-chip" style="display:none;"></div>
+    </div>
+    <div class="home-section">
+      <h3>📋 Culto Sabatino <span id="home-hora-culto" style="font-size:11px;font-weight:500;color:#9ca3af;"></span></h3>
+      <div id="home-timeline-culto"><div class="home-empty">Nenhum momento configurado.<br><button class="btn-goto-culto" onclick="switchTab('culto')">Ir para Configuração →</button></div></div>
+    </div>
+    <div class="home-section">
+      <h3>📖 Escola Sabatina <span id="home-hora-ss" style="font-size:11px;font-weight:500;color:#9ca3af;"></span></h3>
+      <div id="home-timeline-ss"><div class="home-empty">Nenhum momento configurado.</div></div>
     </div>
   </div>
-
-  <!-- Equipe de Som -->
-  <div class="card">
-    <div class="card-header"><div class="card-icon amber">🎛️</div><h2>Equipe de Som da Semana</h2></div>
-    <div class="som-grid" id="som-grid"></div>
-    <button class="btn-add-som" onclick="addSomRow()" style="margin-top:10px;">+ Adicionar função</button>
-  </div>
-
-  <!-- Momentos do Culto -->
-  <div class="card">
-    <div class="card-header"><div class="card-icon purple">📋</div><h2>Momentos do Culto</h2></div>
-    <div class="moments-list" id="culto-list"></div>
-    <div class="add-panel">
-      <button class="add-trigger" onclick="toggleAddPanel('culto-add')">+ Adicionar momento</button>
-      <div class="add-options" id="culto-add">
-        <div class="preset-btns">
-          <button class="btn-preset" onclick="addPreset('culto','BATISMO')">⛦ BATISMO</button>
-          <button class="btn-preset" onclick="addPreset('culto','LEITURA DE ATA')">📄 LEITURA DE ATA</button>
-          <button class="btn-preset" onclick="addPreset('culto','DEPOIMENTO')">🎤 DEPOIMENTO</button>
-        </div>
-        <div class="custom-row">
-          <input type="text" id="culto-custom-input" placeholder="Nome do momento personalizado...">
-          <button class="btn-add-custom" onclick="addCustom('culto')">Adicionar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Escola Sabatina -->
-  <div class="card">
-    <div class="card-header"><div class="card-icon green">📖</div><h2>Escola Sabatina</h2></div>
-    <div class="moments-list" id="ss-list"></div>
-    <div class="add-panel">
-      <button class="add-trigger" onclick="toggleAddPanel('ss-add')">+ Adicionar momento</button>
-      <div class="add-options" id="ss-add">
-        <div class="custom-row">
-          <input type="text" id="ss-custom-input" placeholder="Nome do momento...">
-          <button class="btn-add-custom" onclick="addCustom('ss')">Adicionar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Ações -->
-  <div class="actions">
-    <button class="btn-secondary" onclick="clearAll()">🗑 Redefinir</button>
-    <button class="btn-primary" onclick="exportWpp()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      WhatsApp
-    </button>
-    <button class="btn-primary" style="background:linear-gradient(135deg,#003366,#0056a0);box-shadow:0 6px 20px rgba(0,51,102,.3);" onclick="openCloudModal()">
-      ☁️ Salvar na Nuvem
-    </button>
-  </div>
-
 </div>
 
-<footer style="text-align:center;padding:28px 16px;font-size:12px;color:#9ca3af;font-weight:500;">
-  Desenvolvido por <strong style="color:#003366;">Augusto Furtado</strong> &mdash; 2026
-</footer>
+<!-- ═══════════════════════ CONFIGURAÇÃO ═══════════════════════ -->
+<div class="tab-panel" id="panel-culto">
+  <div class="container">
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon blue">📅</div><h2>Configuração do Culto</h2></div>
+      <div class="info-row">
+        <div class="field"><label class="field-label">Data do Culto</label><input type="date" id="data-culto" oninput="markDirty()"></div>
+        <div class="field"><label class="field-label">Início do Culto</label><input type="text" id="horario-culto" placeholder="9:30" value="9:30" oninput="recalcAll();markDirty()"></div>
+        <div class="field"><label class="field-label">Início Esc. Sabatina</label><input type="text" id="horario-ss" placeholder="11:15" value="11:15" oninput="recalcAll();markDirty()"></div>
+        <div class="field"><label class="field-label">Ancião do Dia</label><input type="text" id="anciao" placeholder="Nome do ancião" oninput="markDirty()"></div>
+        <div class="field"><label class="field-label">Líder Cerimonial</label><input type="text" id="lider-cerimonial" placeholder="Responsável" oninput="markDirty()"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon amber">🎛️</div><h2>Equipe de Som da Semana</h2></div>
+      <div class="som-grid" id="som-grid"></div>
+      <button class="btn-add-som" onclick="addSomRow()" style="margin-top:10px;">+ Adicionar função</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon purple">📋</div><h2>Momentos do Culto</h2></div>
+      <div class="moments-list" id="culto-list"></div>
+      <div class="add-panel">
+        <button class="add-trigger" onclick="toggleAddPanel('culto-add')">+ Adicionar momento</button>
+        <div class="add-options" id="culto-add">
+          <div class="preset-btns">
+            <button class="btn-preset" onclick="addPreset('culto','BATISMO')">⛦ BATISMO</button>
+            <button class="btn-preset" onclick="addPreset('culto','LEITURA DE ATA')">📄 LEITURA DE ATA</button>
+            <button class="btn-preset" onclick="addPreset('culto','DEPOIMENTO')">🎤 DEPOIMENTO</button>
+          </div>
+          <div class="custom-row">
+            <input type="text" id="culto-custom-input" placeholder="Nome do momento personalizado...">
+            <button class="btn-add-custom" onclick="addCustom('culto')">Adicionar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-icon green">📖</div><h2>Escola Sabatina</h2></div>
+      <div class="moments-list" id="ss-list"></div>
+      <div class="add-panel">
+        <button class="add-trigger" onclick="toggleAddPanel('ss-add')">+ Adicionar momento</button>
+        <div class="add-options" id="ss-add">
+          <div class="custom-row">
+            <input type="text" id="ss-custom-input" placeholder="Nome do momento...">
+            <button class="btn-add-custom" onclick="addCustom('ss')">Adicionar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-secondary" onclick="clearAll()">🗑 Redefinir</button>
+      <button class="btn-primary" onclick="exportWpp()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </button>
+      <button class="btn-primary" style="background:linear-gradient(135deg,var(--blue-deep),var(--blue-mid));box-shadow:0 6px 20px rgba(0,51,102,.3);" onclick="openCloudModal()">
+        ☁️ Salvar na Nuvem
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════ SONOPLASTIA ═══════════════════════ -->
+<div class="tab-panel" id="panel-sonoplastia">
+  <div class="placeholder-tab">
+    <div class="ph-icon">🎛️</div>
+    <h3>Sonoplastia</h3>
+    <p>Em breve — painel dedicado à equipe de som.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════ CERIMONIAL ═══════════════════════ -->
+<div class="tab-panel" id="panel-cerimonial">
+  <div class="placeholder-tab">
+    <div class="ph-icon">🎙️</div>
+    <h3>Cerimonial</h3>
+    <p>Em breve — painel dedicado ao líder cerimonial.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════ UI24 ═══════════════════════ -->
+<div class="tab-panel" id="panel-ui24">
+  <div class="placeholder-tab">
+    <div class="ph-icon">🎵</div>
+    <h3>UI24</h3>
+    <p>Em breve — integração com a mesa de som UI24.</p>
+  </div>
+</div>
+
+<footer>Desenvolvido por <strong style="color:var(--blue-deep);">Augusto Furtado</strong> &mdash; 2026</footer>
 
 <!-- Modal: Nuvem -->
 <div class="modal-overlay" id="cloud-modal">
@@ -324,7 +446,7 @@
       </div>
       <div class="music-count" id="music-count"></div>
       <div class="music-results" id="music-results">
-        <div class="music-empty">Digite para buscar entre 1.889 músicas</div>
+        <div class="music-empty">Digite para buscar músicas</div>
       </div>
     </div>
     <div class="modal-footer">
@@ -350,12 +472,12 @@
 
 <script>
   let cultoItems = [], ssItems = [], uid = 0;
+  let isDirty = false;
   const newId = () => ++uid;
 
   const SOM_DEFAULTS = [
-    { icon: '🎚️', role: 'Mesa de som',  nome: '' },
-    { icon: '🎤', role: 'Microfone',     nome: '' },
-    { icon: '📽️', role: 'Projeção',      nome: '' },
+    { icon: '💻', role: 'Computador',  nome: '' },
+    { icon: '🎚️', role: 'Mesa de som', nome: '' },
   ];
 
   const DEFAULT_CULTO = [
@@ -380,16 +502,96 @@
              duration: d.duration ?? 5, resp: d.resp || '', songs: [...(d.songs || [])], note: d.note || '' };
   }
 
+  // ── Dirty tracking ─────────────────────────────────────
+  function markDirty() {
+    if (!isDirty) { isDirty = true; document.getElementById('unsaved-dot').classList.add('show'); }
+  }
+  function markClean() {
+    isDirty = false; document.getElementById('unsaved-dot').classList.remove('show');
+  }
+
+  // ── Toast system ───────────────────────────────────────
+  function showToast(msg, type, duration) {
+    duration = duration || 3000;
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = 'toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    c.appendChild(t);
+    requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, duration);
+  }
+
+  // ── Tab switching ──────────────────────────────────────
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+    if (name === 'home') refreshHome();
+  }
+
+  // ── Home: read-only refresh ────────────────────────────
+  function refreshHome() {
+    saveList('culto-list', cultoItems);
+    saveList('ss-list', ssItems);
+    computeTimes(cultoItems, document.getElementById('horario-culto').value);
+    computeTimes(ssItems,    document.getElementById('horario-ss').value);
+
+    const datVal  = document.getElementById('data-culto').value;
+    const anciao  = document.getElementById('anciao').value.trim();
+    const lider   = document.getElementById('lider-cerimonial').value.trim();
+    const hCulto  = document.getElementById('horario-culto').value;
+    const hSS     = document.getElementById('horario-ss').value;
+    const som     = getSomData().filter(r => r.nome);
+
+    document.getElementById('home-data').textContent    = datVal ? formatDate(datVal) : '—';
+    document.getElementById('home-anciao').textContent  = anciao || '—';
+    document.getElementById('home-lider').textContent   = lider  || '—';
+    document.getElementById('home-hora-culto').textContent = hCulto ? '· ' + hCulto : '';
+    document.getElementById('home-hora-ss').textContent    = hSS    ? '· ' + hSS    : '';
+
+    const somChip = document.getElementById('home-som-chip');
+    if (som.length) {
+      somChip.style.display = '';
+      somChip.innerHTML = '<span class="chip-label">Som</span>' + som.map(r => esc(r.nome)).join(' · ');
+    } else {
+      somChip.style.display = 'none';
+    }
+
+    renderTimeline('home-timeline-culto', cultoItems);
+    renderTimeline('home-timeline-ss',    ssItems);
+  }
+
+  function renderTimeline(elId, arr) {
+    const el = document.getElementById(elId);
+    const active = arr.filter(i => i.enabled);
+    if (!active.length) {
+      el.innerHTML = '<div class="home-empty">Nenhum momento ativo.<br><button class="btn-goto-culto" onclick="switchTab(\'culto\')">Ir para Configuração →</button></div>';
+      return;
+    }
+    el.innerHTML = active.map(item => {
+      const songs = item.songs.filter(s => s.trim());
+      return `<div class="tl-item">
+        <span class="tl-time">${esc(item.computedTime || '')}</span>
+        <div class="tl-body">
+          <div class="tl-label">${esc(item.label)}</div>
+          ${item.resp ? `<div class="tl-resp">${esc(item.resp)}</div>` : ''}
+          ${songs.length ? `<div class="tl-songs">${songs.map(s => `<div class="tl-song">🎵 ${esc(s)}</div>`).join('')}</div>` : ''}
+          ${item.note ? `<div class="tl-note">${esc(item.note)}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
   // ── Time calculation ───────────────────────────────────
   function parseTime(str) {
     const parts = (str || '0:00').split(':').map(Number);
     return (parts[0] || 0) * 60 + (parts[1] || 0);
   }
-
   function formatTime(mins) {
     return `${Math.floor(mins / 60)}:${String(mins % 60).padStart(2, '0')}`;
   }
-
   function computeTimes(arr, startStr) {
     let cursor = parseTime(startStr);
     arr.forEach(item => {
@@ -397,26 +599,20 @@
       if (item.enabled) cursor += (item.duration || 0);
     });
   }
-
   function getStartTime(listId) {
     const id = listId === 'culto-list' ? 'horario-culto' : 'horario-ss';
     return document.getElementById(id).value || '0:00';
   }
-
   function recalcAll() {
     computeTimes(cultoItems, document.getElementById('horario-culto').value);
     computeTimes(ssItems,    document.getElementById('horario-ss').value);
     refreshBadges('culto-list', cultoItems);
     refreshBadges('ss-list',    ssItems);
   }
-
   function refreshBadges(listId, arr) {
     document.querySelectorAll(`#${listId} .moment-item`).forEach(el => {
       const item = arr.find(i => i.id === +el.dataset.id);
-      if (item) {
-        const badge = el.querySelector('.time-badge');
-        if (badge) badge.textContent = item.computedTime || '';
-      }
+      if (item) { const badge = el.querySelector('.time-badge'); if (badge) badge.textContent = item.computedTime || ''; }
     });
   }
 
@@ -428,8 +624,8 @@
     row.innerHTML = `
       <span class="som-role-icon">${data.icon || '🎵'}</span>
       <span class="som-role-label">${esc(data.role || 'Função')}</span>
-      <input type="text" value="${esc(data.nome || '')}" placeholder="Nome do responsável">
-      <button class="btn-rm-som" onclick="this.closest('.som-row').remove()">×</button>`;
+      <input type="text" value="${esc(data.nome || '')}" placeholder="Nome do responsável" oninput="markDirty()">
+      <button class="btn-rm-som" onclick="this.closest('.som-row').remove();markDirty()">×</button>`;
     if (!data.role) {
       const label = row.querySelector('.som-role-label');
       label.contentEditable = true;
@@ -438,8 +634,8 @@
       setTimeout(() => label.focus(), 50);
     }
     grid.appendChild(row);
+    markDirty();
   }
-
   function getSomData() {
     return Array.from(document.querySelectorAll('.som-row')).map(row => ({
       icon: row.querySelector('.som-role-icon').textContent,
@@ -447,10 +643,19 @@
       nome: row.querySelector('input').value.trim(),
     }));
   }
-
   function renderSom(list) {
     document.getElementById('som-grid').innerHTML = '';
-    list.forEach(d => addSomRow(d));
+    list.forEach(d => {
+      const grid = document.getElementById('som-grid');
+      const row  = document.createElement('div');
+      row.className = 'som-row';
+      row.innerHTML = `
+        <span class="som-role-icon">${d.icon || '🎵'}</span>
+        <span class="som-role-label">${esc(d.role || 'Função')}</span>
+        <input type="text" value="${esc(d.nome || '')}" placeholder="Nome do responsável" oninput="markDirty()">
+        <button class="btn-rm-som" onclick="this.closest('.som-row').remove();markDirty()">×</button>`;
+      grid.appendChild(row);
+    });
   }
 
   // ── Save DOM → array ───────────────────────────────────
@@ -482,15 +687,15 @@
              <div class="song-list" id="sl-${item.id}">
                ${(item.songs.length ? item.songs : ['']).map((s, i) =>
                  `<div class="song-row">
-                    <input type="text" class="song-input" value="${esc(s)}" placeholder="Música ${i+1}">
+                    <input type="text" class="song-input" value="${esc(s)}" placeholder="Música ${i+1}" oninput="markDirty()">
                     <button class="btn-pick-music" onclick="openMusicPicker(this.previousElementSibling)" title="Buscar no Louvor JA">🎵</button>
-                    <button class="btn-rm-song" onclick="this.closest('.song-row').remove()">×</button>
+                    <button class="btn-rm-song" onclick="this.closest('.song-row').remove();markDirty()">×</button>
                   </div>`).join('')}
                <button class="btn-add-song" onclick="addSong(${item.id},'${listId}')">+ música</button>
              </div>
-             <input type="text" class="note-input" value="${esc(item.note)}" placeholder="Observação...">
+             <input type="text" class="note-input" value="${esc(item.note)}" placeholder="Observação..." oninput="markDirty()">
            </div>`
-        : `<div class="moment-expand"><input type="text" class="note-input" value="${esc(item.note)}" placeholder="Observação..."></div>`;
+        : `<div class="moment-expand"><input type="text" class="note-input" value="${esc(item.note)}" placeholder="Observação..." oninput="markDirty()"></div>`;
 
       el.innerHTML = `
         <div class="moment-row">
@@ -507,7 +712,7 @@
                    title="Duração em minutos" oninput="onDurChange('${listId}',${item.id},this.value)"
                    ${!item.enabled ? 'disabled' : ''}>
             <span class="dur-label">min</span>
-            <input type="text" class="inp-resp" value="${esc(item.resp)}" placeholder="Responsável" ${!item.enabled ? 'disabled' : ''}>
+            <input type="text" class="inp-resp" value="${esc(item.resp)}" placeholder="Responsável" oninput="markDirty()" ${!item.enabled ? 'disabled' : ''}>
           </div>
           <button class="btn-remove-item" onclick="removeItem('${listId}',${item.id})">×</button>
         </div>${songRows}`;
@@ -526,6 +731,7 @@
     if (item) item.duration = parseInt(val, 10) || 0;
     computeTimes(arr, getStartTime(listId));
     refreshBadges(listId, arr);
+    markDirty();
   }
 
   // ── Toggle ─────────────────────────────────────────────
@@ -539,6 +745,7 @@
     if (item) item.enabled = on;
     computeTimes(arr, getStartTime(listId));
     refreshBadges(listId, arr);
+    markDirty();
   }
 
   // ── Drag and drop ──────────────────────────────────────
@@ -546,8 +753,7 @@
 
   function setupDrag(el, listId) {
     el.addEventListener('dragstart', e => {
-      dragSrc  = el;
-      dragList = listId;
+      dragSrc  = el; dragList = listId;
       e.dataTransfer.effectAllowed = 'move';
       setTimeout(() => el.classList.add('dragging'), 0);
     });
@@ -575,6 +781,7 @@
       const [moved] = arr.splice(srcIdx, 1);
       arr.splice(dstIdx, 0, moved);
       renderList(listId, arr);
+      markDirty();
     });
   }
 
@@ -584,8 +791,8 @@
     saveList(listId, arr);
     arr.splice(arr.findIndex(i => i.id === id), 1);
     renderList(listId, arr);
+    markDirty();
   }
-
   function addSong(itemId, listId) {
     const arr  = getList(listId);
     saveList(listId, arr);
@@ -594,19 +801,19 @@
     renderList(listId, arr);
     const sl = document.getElementById('sl-' + itemId);
     if (sl) { const ins = sl.querySelectorAll('.song-input'); if (ins.length) ins[ins.length-1].focus(); }
+    markDirty();
   }
 
   // ── Add panel ──────────────────────────────────────────
   function toggleAddPanel(id) { document.getElementById(id).classList.toggle('open'); }
-
   function addPreset(target, label) {
     const arr = getList(target + '-list');
     saveList(target + '-list', arr);
     arr.push(makeItem({ label, hasSongs: false, duration: 5 }));
     renderList(target + '-list', arr);
     document.getElementById(target + '-add').classList.remove('open');
+    markDirty();
   }
-
   function addCustom(target) {
     const input = document.getElementById(target + '-custom-input');
     const label = input.value.trim().toUpperCase();
@@ -617,11 +824,11 @@
     renderList(target + '-list', arr);
     input.value = '';
     document.getElementById(target + '-add').classList.remove('open');
+    markDirty();
   }
 
   // ── WhatsApp Export ────────────────────────────────────
   function formatDate(s) { if (!s) return '[DATA]'; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
-
   function exportWpp() {
     saveList('culto-list', cultoItems);
     saveList('ss-list', ssItems);
@@ -630,7 +837,6 @@
     const anciao = document.getElementById('anciao').value.trim();
     const lider  = document.getElementById('lider-cerimonial').value.trim();
     const som    = getSomData().filter(r => r.nome);
-
     let text = `CULTO DE SÁBADO — ${formatDate(document.getElementById('data-culto').value)}\n\n`;
     cultoItems.forEach(r => {
       if (!r.enabled) return;
@@ -638,13 +844,11 @@
       r.songs.forEach(s => { if (s.trim()) text += `  -> ${s.trim()}\n`; });
       if (r.note) text += `  (${r.note})\n`;
     });
-
     const ss = ssItems.filter(r => r.enabled);
     if (ss.length) {
       text += `\nESCOLA SABATINA\n`;
       ss.forEach(r => { text += [r.computedTime, '-', r.label, r.resp].filter(Boolean).join(' ') + '\n'; });
     }
-
     text += `\n─────────────────\n`;
     text += `Ancião: ${anciao || '[ANCIÃO]'}\n`;
     if (lider) text += `Cerimonial: ${lider}\n`;
@@ -652,17 +856,14 @@
       text += `\nEquipe de Som:\n`;
       som.forEach(r => { text += `  ${r.role}: ${r.nome}\n`; });
     }
-
     document.getElementById('wpp-preview').textContent = text;
     document.getElementById('wpp-modal').classList.add('open');
   }
-
   function closeWppModal() {
     document.getElementById('wpp-modal').classList.remove('open');
     const btn = document.getElementById('btn-copy-msg');
     btn.textContent = '📋 Copiar mensagem'; btn.classList.remove('copied');
   }
-
   function copyWpp() {
     navigator.clipboard.writeText(document.getElementById('wpp-preview').textContent).then(() => {
       const btn = document.getElementById('btn-copy-msg');
@@ -670,10 +871,10 @@
       setTimeout(() => { btn.textContent = '📋 Copiar mensagem'; btn.classList.remove('copied'); }, 2500);
     });
   }
-
   function clearAll() {
     if (!confirm('Redefinir tudo para os valores padrão?')) return;
     init();
+    showToast('Redefinido para os padrões', 'warning');
   }
 
   // ── JSONBin ────────────────────────────────────────────
@@ -685,7 +886,6 @@
     document.getElementById('link-sono').textContent = base ? `${base}sonoplastia.html` : '—';
     document.getElementById('link-cer').textContent  = base ? `${base}cerimonial.html`  : '—';
   }
-
   function copyLink(elId, btn) {
     navigator.clipboard.writeText(document.getElementById(elId).textContent).then(() => {
       const orig = btn.textContent;
@@ -693,7 +893,6 @@
       setTimeout(() => { btn.textContent = orig; btn.style.background = '#003366'; }, 2000);
     });
   }
-
   function openCloudModal() {
     document.getElementById('jb-key').value = localStorage.getItem('jb-key') || '';
     const bid = localStorage.getItem('jb-bid') || '';
@@ -703,18 +902,16 @@
     updateShareLinks(bid);
     document.getElementById('cloud-modal').classList.add('open');
   }
-
   function closeCloudModal() {
     const key = document.getElementById('jb-key').value.trim();
     if (key) localStorage.setItem('jb-key', key);
     document.getElementById('cloud-modal').classList.remove('open');
   }
-
-  function setCloudStatus(msg, color = '#6b7280') {
+  function setCloudStatus(msg, color) {
+    color = color || '#6b7280';
     const el = document.getElementById('cloud-status');
     el.textContent = msg; el.style.color = color;
   }
-
   function buildPayload() {
     saveList('culto-list', cultoItems);
     saveList('ss-list', ssItems);
@@ -728,6 +925,20 @@
       cultoItems, ssItems,
       updatedAt: new Date().toISOString()
     };
+  }
+
+  function applyPayload(d) {
+    document.getElementById('data-culto').value      = d.data || '';
+    document.getElementById('anciao').value           = d.anciao || '';
+    document.getElementById('lider-cerimonial').value = d.liderCerimonial || '';
+    document.getElementById('horario-culto').value    = d.horarioCulto || '9:30';
+    document.getElementById('horario-ss').value       = d.horarioSS    || '11:15';
+    renderSom(d.equipeSom && d.equipeSom.length ? d.equipeSom : SOM_DEFAULTS);
+    uid = 0;
+    cultoItems = (d.cultoItems || []).map(i => ({ ...i, id: newId(), duration: i.duration ?? 5 }));
+    ssItems    = (d.ssItems    || []).map(i => ({ ...i, id: newId(), duration: i.duration ?? 5 }));
+    renderList('culto-list', cultoItems);
+    renderList('ss-list',    ssItems);
   }
 
   async function saveToCloud() {
@@ -760,7 +971,12 @@
       if (!res.ok) throw new Error('HTTP ' + res.status);
       updateShareLinks(localStorage.getItem('jb-bid') || '');
       setCloudStatus('✅ Salvo com sucesso!', '#16a34a');
-    } catch(e) { setCloudStatus('❌ ' + e.message, '#ef4444'); }
+      markClean();
+      showToast('✅ Salvo na nuvem!', 'success');
+    } catch(e) {
+      setCloudStatus('❌ ' + e.message, '#ef4444');
+      showToast('Erro ao salvar: ' + e.message, 'error');
+    }
   }
 
   async function loadFromCloud() {
@@ -774,20 +990,28 @@
       const res = await fetch(`${JB}/b/${bid}/latest`, { headers: { 'X-Master-Key': key } });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const { record: d } = await res.json();
-      document.getElementById('data-culto').value      = d.data || '';
-      document.getElementById('anciao').value           = d.anciao || '';
-      document.getElementById('lider-cerimonial').value = d.liderCerimonial || '';
-      document.getElementById('horario-culto').value    = d.horarioCulto || '9:30';
-      document.getElementById('horario-ss').value       = d.horarioSS    || '11:15';
-      renderSom(d.equipeSom && d.equipeSom.length ? d.equipeSom : SOM_DEFAULTS);
-      uid = 0;
-      cultoItems = (d.cultoItems || []).map(i => ({ ...i, id: newId(), duration: i.duration ?? 5 }));
-      ssItems    = (d.ssItems    || []).map(i => ({ ...i, id: newId(), duration: i.duration ?? 5 }));
-      renderList('culto-list', cultoItems);
-      renderList('ss-list',    ssItems);
+      applyPayload(d);
       const dt = d.updatedAt ? new Date(d.updatedAt).toLocaleString('pt-BR') : '—';
       setCloudStatus(`✅ Carregado! Salvo em: ${dt}`, '#16a34a');
-    } catch(e) { setCloudStatus('❌ ' + e.message, '#ef4444'); }
+      markClean();
+      showToast('✅ Dados carregados da nuvem', 'success', 2500);
+    } catch(e) {
+      setCloudStatus('❌ ' + e.message, '#ef4444');
+      showToast('Erro ao carregar: ' + e.message, 'error');
+    }
+  }
+
+  async function tryAutoLoad() {
+    const key = localStorage.getItem('jb-key');
+    const bid = localStorage.getItem('jb-bid');
+    if (!key || !bid) return;
+    try {
+      const res = await fetch(`${JB}/b/${bid}/latest`, { headers: { 'X-Master-Key': key } });
+      if (!res.ok) return;
+      applyPayload((await res.json()).record);
+      markClean();
+      showToast('✅ Dados carregados da nuvem', 'success', 2500);
+    } catch(e) {}
   }
 
   // ── Music Picker ───────────────────────────────────────
@@ -811,12 +1035,10 @@
     filterMusicas(search.value);
     setTimeout(() => search.focus(), 50);
   }
-
   function closeMusicModal() {
     document.getElementById('music-modal').classList.remove('open');
     pickerTarget = null;
   }
-
   function filterMusicas(query) {
     const results = document.getElementById('music-results');
     const countEl = document.getElementById('music-count');
@@ -825,7 +1047,6 @@
     const matches = q.length < 2
       ? []
       : musicDB.filter(m => m.nome.toLowerCase().includes(q) || (m.albuns || '').toLowerCase().includes(q)).slice(0, 80);
-
     if (q.length < 2) {
       results.innerHTML = '<div class="music-empty">Digite ao menos 2 letras para buscar</div>';
       countEl.textContent = ''; return;
@@ -842,15 +1063,13 @@
        </div>`
     ).join('');
   }
-
   function highlight(text, q) {
     const idx = text.toLowerCase().indexOf(q.toLowerCase());
     if (idx < 0) return text;
     return text.slice(0, idx) + `<mark style="background:#fef08a;border-radius:3px;padding:0 1px">${text.slice(idx, idx + q.length)}</mark>` + text.slice(idx + q.length);
   }
-
   function selectMusica(nome) {
-    if (pickerTarget) { pickerTarget.value = nome; pickerTarget.dispatchEvent(new Event('input')); }
+    if (pickerTarget) { pickerTarget.value = nome; pickerTarget.dispatchEvent(new Event('input')); markDirty(); }
     closeMusicModal();
   }
 
@@ -871,9 +1090,11 @@
     renderSom(SOM_DEFAULTS);
     renderList('culto-list', cultoItems);
     renderList('ss-list',    ssItems);
+    markClean();
   }
 
   init();
+  tryAutoLoad();
 </script>
 </body>
 </html>
