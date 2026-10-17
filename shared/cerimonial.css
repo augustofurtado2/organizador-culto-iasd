@@ -1,0 +1,34 @@
+/* Layout original centralizado; ajustes V2 em ui.css. */
+body { padding-bottom: 80px; }
+
+    .progress-bar { background: var(--surface); padding: 10px 22px; border-bottom: 1px solid var(--mist); display: flex; align-items: center; gap: 10px; }
+    .prog-track { flex: 1; height: 6px; background: var(--mist); border-radius: 6px; overflow: hidden; }
+    .prog-fill { height: 100%; background: var(--surface-2); border-radius: 6px; transition: width .5s; }
+    .prog-label { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 700; color: var(--ink-soft); white-space: nowrap; }
+
+    .section-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--ink-faint); text-transform: uppercase; padding: 4px 0 8px; }
+    .timeline { display: flex; flex-direction: column; }
+
+    .moment-row { display: flex; align-items: stretch; cursor: pointer; user-select: none; }
+    .timeline-track { display: flex; flex-direction: column; align-items: center; width: 36px; flex-shrink: 0; padding-left: 10px; }
+    .tl-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--mist-strong); border: 2px solid var(--mist); flex-shrink: 0; margin-top: 15px; transition: all .2s; }
+    .tl-line { width: 2px; flex: 1; background: var(--mist); min-height: 12px; }
+    .moment-row:last-child .tl-line { display: none; }
+    .moment-row.checked .tl-dot  { background: var(--good); border-color: var(--good); }
+    .moment-row.checked .tl-line { background: var(--good-tint); }
+
+    .moment-card { flex: 1; background: var(--surface); border-radius: var(--radius); margin: 4px 0; padding: 12px 14px; border: 1.5px solid var(--mist); box-shadow: var(--shadow); transition: all .2s; display: flex; align-items: center; gap: 10px; }
+    .moment-row:active .moment-card { transform: scale(.98); }
+    .moment-row.checked .moment-card { background: var(--good-tint); border-color: color-mix(in srgb, var(--good) 35%, var(--mist)); box-shadow: none; }
+
+    .time-tag { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 700; color: var(--brand); background: var(--brand-tint); padding: 4px 10px; border-radius: 8px; min-width: 52px; text-align: center; flex-shrink: 0; }
+    .moment-row.checked .time-tag { background: var(--good-tint); color: var(--good); }
+    .moment-info { flex: 1; min-width: 0; }
+    .moment-label { font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .moment-row.checked .moment-label { color: var(--good); text-decoration: line-through; }
+    .moment-sub { display: flex; align-items: center; gap: 6px; margin-top: 3px; flex-wrap: wrap; }
+    .resp-chip  { font-size: 11px; font-weight: 600; color: var(--ink-soft); background: var(--surface-2); padding: 2px 8px; border-radius: 6px; }
+    .music-chip { font-size: 11px; font-weight: 600; color: var(--brand); background: var(--brand-tint); padding: 2px 8px; border-radius: 6px; }
+    .note-chip  { font-size: 11px; color: var(--warn); background: var(--warn-tint); padding: 2px 8px; border-radius: 6px; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .check-icon { font-size: 20px; flex-shrink: 0; width: 28px; text-align: center; color: var(--mist-strong); transition: all .2s; }
+    .moment-row.checked .check-icon { color: var(--good); }

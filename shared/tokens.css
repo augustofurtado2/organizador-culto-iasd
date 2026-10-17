@@ -1,0 +1,143 @@
+/* UI/UX V2 — semântica de cor, escala e compatibilidade com as telas existentes. */
+:root {
+  --color-primary: #062b49;
+  --color-primary-hover: #0b3d63;
+  --color-secondary: #1f6fc2;
+  --color-success: #237e53;
+  --color-success-accent: #2fa36b;
+  --color-danger: #d9363e;
+  --color-warning: #8a642a;
+  --color-gold: #c89b52;
+  --color-bg: #f7f9fc;
+  --color-surface: #fff;
+  --color-surface-subtle: #eef3f8;
+  --color-border: #e2e8f0;
+  --color-text: #10233d;
+  --color-text-muted: #64748b;
+  --color-primary-subtle: #eaf2fb;
+  --color-success-subtle: #eaf6ef;
+  --color-danger-subtle: #fff0f1;
+  --color-warning-subtle: #faf3e8;
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgb(6 43 73 / 4%);
+  --shadow-md: 0 8px 24px rgb(6 43 73 / 8%);
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --font-ui: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --sidebar-width: 240px;
+  --paper: var(--color-bg); --surface: var(--color-surface);
+  --surface-2: var(--color-surface-subtle); --mist: var(--color-border);
+  --mist-strong: #cbd5e1; --ink: var(--color-text); --ink-soft: var(--color-text-muted);
+  --ink-faint: var(--color-text-muted); --brand: var(--color-primary);
+  --brand-mid: var(--color-secondary); --brand-tint: var(--color-primary-subtle);
+  --signal: var(--color-danger); --signal-tint: var(--color-danger-subtle);
+  --good: var(--color-success); --good-tint: var(--color-success-subtle);
+  --warn: var(--color-warning); --warn-tint: var(--color-warning-subtle);
+  --radius: var(--radius-md); --shadow: var(--shadow-sm);
+  --blue-deep: var(--brand); --blue-mid: var(--brand-mid); --blue-light: var(--brand-tint);
+  --blue-xlight: var(--paper); --border: var(--mist); --text-main: var(--ink); --text-muted: var(--ink-soft);
+}
+:root[data-theme="dark"] {
+  --paper: #081b2c; --surface: #102a40; --surface-2: #18374e;
+  --ink: #f7f9fc; --ink-soft: #c1d0df; --ink-faint: #a9bed0;
+  --brand-mid: #8fc5ff; --mist: #29465e; --mist-strong: #46647d;
+}
+
+/* Design system — Organizador de Culto IASD Boa Vista.
+   Um token só, usado pelas 6 telas. Página "clara" (admin/cerimonial) usa
+   os valores padrão de :root; página "escura" (sonoplastia/mesa de
+   som/timer) declara <html data-theme="dark"> e herda o segundo bloco.
+   Ver docs/ — proposta original validada como Artifact antes de aplicar. */
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--font-ui); background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--brand-mid); color: white; }
+
+/* ── Primitivos reaproveitados nas 6 telas ── */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-weight: 700; font-size: 12px;
+  font-variant-numeric: tabular-nums; letter-spacing: -.01em;
+  background: var(--brand-tint); color: var(--brand-mid);
+  border-radius: 7px; padding: 3px 9px;
+}
+[data-theme="dark"] .chip { background: #14273f; color: #7fb3f0; border: 1px solid #24405e; }
+
+.chip-live {
+  background: var(--signal-tint); color: var(--signal);
+}
+.chip-live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--signal); display: inline-block; animation: ds-pulse 1.6s ease-in-out infinite; }
+@keyframes ds-pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .chip-live::before { animation: none; } }
+
+.eyebrow {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint);
+}
+
+.btn {
+  font-family: var(--font-ui); font-size: 13.5px; font-weight: 650;
+  border-radius: 10px; padding: 10px 18px; border: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary { background: var(--brand); color: white; }
+.btn-signal { background: var(--signal); color: white; }
+.btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--mist-strong); }
+.btn:focus-visible { outline: 2px solid var(--brand-mid); outline-offset: 2px; }
+.btn:disabled { opacity: .5; cursor: default; }
+
+/* ── Cabeçalho das telas de campo (sonoplastia/cerimonial/mesa de som) ──
+   Mesmo componente nas 3 — é o que faz elas lerem como uma família, não
+   como 3 apps que por acaso têm cor parecida. O index.html (admin) usa um
+   shell próprio, com abas — função diferente, mas segue a mesma escala de
+   espaçamento abaixo. */
+.field-header {
+  background: var(--brand);
+  padding: 18px 22px 16px;
+  display: flex; align-items: center; gap: 12px;
+  position: sticky; top: 0; z-index: 10;
+  box-shadow: 0 2px 20px rgba(0,0,0,.3);
+}
+.field-header .field-icon { font-size: 22px; flex-shrink: 0; }
+.field-header h1 { font-size: 16px; font-weight: 800; color: white; margin: 0; }
+.field-header p { font-size: 11px; color: rgba(255,255,255,.68); font-weight: 500; margin: 2px 0 0; }
+.field-header .field-badge { margin-left: auto; flex-shrink: 0; }
+
+.field-info-strip {
+  background: var(--surface); padding: 10px 22px; display: flex; gap: 16px;
+  flex-wrap: wrap; border-bottom: 1px solid var(--mist);
+}
+.field-info-pill { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-soft); }
+.field-info-pill strong { color: var(--ink); font-weight: 650; }
+
+.field-status-bar {
+  background: var(--surface-2); padding: 8px 22px; display: flex; align-items: center;
+  justify-content: space-between; border-bottom: 1px solid var(--mist); font-size: 11px; color: var(--ink-faint);
+}
+.field-status-bar.ok   { color: var(--good); }
+.field-status-bar.err  { color: #ef4444; }
+.field-status-bar.load { color: var(--warn); }
+.field-status-bar .btn-refresh {
+  background: var(--mist); border: 1px solid var(--mist-strong); color: var(--brand-mid);
+  font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 8px; cursor: pointer; font-family: inherit;
+}
+
+.field-container { padding: 20px 22px 40px; max-width: 720px; margin: 0 auto; }
+
+/* ── Gate de senha — idêntico nas 4 telas de campo ── */
+.gate { display: none; position: fixed; inset: 0; background: var(--paper); z-index: 200; align-items: center; justify-content: center; padding: 24px; flex-direction: column; }
+.gate.open { display: flex; }
+.gate-box { background: var(--surface); border: 1px solid var(--mist); border-radius: 24px; padding: 36px 28px; width: 100%; max-width: 340px; text-align: center; }
+.gate-icon { font-size: 48px; margin-bottom: 16px; }
+.gate-box h2 { font-size: 20px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
+.gate-box p  { font-size: 13px; color: var(--ink-faint); margin-bottom: 24px; line-height: 1.5; }
+.gate-input { width: 100%; padding: 14px 16px; background: var(--paper); border: 1.5px solid var(--mist); border-radius: 12px; font-size: 18px; color: var(--ink); font-family: inherit; text-align: center; letter-spacing: 4px; margin-bottom: 8px; transition: border-color .2s; }
+.gate-input:focus { outline: none; border-color: var(--brand-mid); }
+.gate-input.err { border-color: #ef4444; animation: ds-shake .3s; }
+.gate-err { font-size: 12px; color: #ef4444; min-height: 16px; margin-bottom: 12px; }
+.btn-gate { width: 100%; background: var(--brand); color: white; border: none; border-radius: 12px; padding: 15px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 6px 20px rgba(0,51,102,.3); }
+@keyframes ds-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
+.empty-state { text-align: center; padding: 40px 20px; color: var(--ink-faint); }
+.empty-state p { font-size: 14px; margin-top: 8px; }
+

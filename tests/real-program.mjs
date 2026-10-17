@@ -1,0 +1,30 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { clone,computeTimes,inferDurationsFromTimes,validateCulto,emptyCollection,applyOperation,liveView,uid,enabledItems,sectionSchedule } from '../shared/culto.js';
+import { prepareSupabaseCulto } from '../shared/supabase-model.js';
+const fixture=JSON.parse(await readFile(new URL('../fixtures/exemplo-sabado-2026-10-10.json',import.meta.url),'utf8'));
+const expected=['09:30','09:32','09:42','09:47','09:52','09:56','10:05','10:15','10:55','11:00','11:04','11:05','12:00'];
+validateCulto(fixture);computeTimes(fixture);assert.deepEqual(fixture.items.map(i=>i.computedTime),expected);
+assert.deepEqual(fixture.items.map(i=>i.duration),[2,10,5,5,4,9,10,40,5,4,1,55,null]);
+const inferred=clone(fixture);inferred.items.forEach(i=>i.duration=null);inferred.items[2].duration=5;inferDurationsFromTimes(inferred);assert.deepEqual(inferred.items.map(i=>i.duration),fixture.items.map(i=>i.duration));
+assert.equal(fixture.elder,'Decio');assert.equal(fixture.ceremonyLead,'Carol');assert.equal(fixture.items.flatMap(i=>i.songs).length,5);
+assert.equal(fixture.items.filter(i=>i.mediaType==='video').length,3);assert.equal(fixture.items[3].mediaTitle,'Provai e Vede');assert.equal(fixture.items[3].responsible,'');assert.equal(fixture.items[4].responsible,'Grupo Vocal Boa Vista');
+assert.deepEqual(sectionSchedule(fixture,'culto'),{start:'09:30',end:'11:05',endIsMarker:false});assert.deepEqual(sectionSchedule(fixture,'ss'),{start:'11:05',end:'12:00',endIsMarker:true});
+for(const [label,duration,expectedTimes] of [['Sermão',45,['11:00','11:05','11:09','11:10','12:05']],['Louvor inicial',12,['10:57','11:02','11:06','11:07','12:02']]]){
+ const c=clone(fixture);c.items.find(i=>i.label===label).duration=duration;computeTimes(c);assert.deepEqual(c.items.slice(8).map(i=>i.computedTime),expectedTimes);
+}
+const disabled=clone(fixture);disabled.sections[0].enabled=false;computeTimes(disabled);assert.equal(disabled.items.find(i=>i.type==='school').computedTime,'09:30');assert.equal(enabledItems(disabled).length,2);
+const moved=clone(fixture),musical=moved.items.find(i=>i.type==='special_music'),musicalBefore=clone(musical),children=moved.items.find(i=>i.type==='children');
+const index=moved.items.indexOf(musical),other=moved.items.indexOf(children);[moved.items[index],moved.items[other]]=[moved.items[other],moved.items[index]];computeTimes(moved);
+assert.equal(musical.computedTime,'10:01');assert.equal(children.computedTime,'09:52');assert.deepEqual({...musical,order:musicalBefore.order,computedTime:musicalBefore.computedTime},musicalBefore);assert.equal(children.mediaType,'video');
+const sections=clone(fixture);[sections.sections[0].position,sections.sections[1].position]=[1,0];computeTimes(sections);assert.equal(sections.items[0].section,'ss');assert.equal(sections.items[0].computedTime,'09:30');assert.equal(sections.items.at(-1).computedTime,'','Duração desconhecida não pode produzir horário inventado para seção seguinte');
+sections.items.find(i=>i.type==='closing').duration=0;computeTimes(sections);assert.equal(sections.items.find(i=>i.type==='welcome').computedTime,'10:25');
+let db=applyOperation(emptyCollection(),{type:'save',culto:fixture});db=applyOperation(db,{type:'start',id:fixture.id},'2026-10-10T12:30:00Z');
+for(let i=0;i<10;i++)db=applyOperation(db,{type:'next',id:fixture.id},'2026-10-10T14:04:00Z');assert.equal(liveView(db,db.cultos[0]).active.type,'transition');
+const last=clone(db);last.liveState.activeItemId=fixture.items.at(-1).id;const view=liveView(last,last.cultos[0]);assert.equal(view.remaining,null);assert.equal(view.overtime,false);
+db=applyOperation(db,{type:'checklist',id:fixture.id,itemId:fixture.items[0].id,completed:true});const copyId=uid();db=applyOperation(db,{type:'duplicate',id:fixture.id,newId:copyId});const copy=db.cultos.find(c=>c.id===copyId);
+assert.equal(copy.date,'2026-10-17');assert.equal(copy.status,'planned');assert.ok(!copy.checklistIds?.length);assert.notEqual(copy.sections[0].id,fixture.sections[0].id);assert.ok(copy.items.every(i=>!i.realStartedAt&&!i.realFinishedAt));assert.equal(copy.items.flatMap(i=>i.songs).length,5);
+const projected=prepareSupabaseCulto(fixture);assert.equal(projected.items[3].mediaType,'video');assert.equal(projected.items[1].songs[0].reference,'564');assert.equal(projected.items.at(-1).duration,null);
+const catalog=JSON.parse(await readFile(new URL('../data/musicas.json',import.meta.url),'utf8'));for(const song of fixture.items.flatMap(i=>i.songs))if(song.songId)assert.ok(catalog.some(s=>String(s.id)===song.songId));
+assert.equal(enabledItems(fixture).length,13);
+console.log('OK sábado 10/10: 13 horários, 5 músicas, 3 vídeos, duração ausente, recálculo entre seções, reordenação, transição ao vivo, duplicação e DTO Supabase.');

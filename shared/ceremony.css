@@ -1,0 +1,100 @@
+/* Cerimonial: leitura e checklist, com prioridade para celular. */
+.ceremony-mobile .v2-main { max-width:1250px; }
+.ceremony-mobile #content { gap:16px; }
+.ceremony-mobile .v2-card { padding:20px; border-radius:12px; box-shadow:none; }
+.ceremony-mobile header.v2-header { padding:14px 24px; }
+.ceremony-brand > span { font-size:12px; color:#c7dce7; }
+.ceremony-brand h1 { margin:0; font-size:23px; line-height:1.25; }
+.ceremony-brand p { margin:4px 0 0; font-size:12px; color:#e1edf4; }
+.ceremony-header-actions { display:flex; align-items:center; gap:14px; }
+.ceremony-context { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; color:var(--ink-soft); font-size:12px; }
+#ceremony-connection { font-size:11px; }
+#ceremony-connection[data-state="local"],#ceremony-connection[data-state="synced"] { color:var(--good); }
+.ceremony-mobile .checklist-progress { padding:16px 20px; }
+.checklist-progress h2 { margin:0 0 8px; font-size:16px; }
+.checklist-progress > div { position:relative; padding-right:45px; }
+.checklist-progress strong { font-size:17px; }
+.checklist-progress span { font-size:13px; color:var(--ink-soft); }
+.checklist-progress .ceremony-percent { position:absolute; right:0; bottom:0; color:var(--good); font-size:18px; font-weight:650; }
+.checklist-progress progress { margin-top:12px; height:8px; display:block; }
+.ceremony-layout,.ceremony-follow { display:flex; flex-direction:column; gap:16px; }
+.ceremony-current { scroll-margin-top:16px; border:1px solid var(--mist); background:var(--surface); }
+.ceremony-card-heading { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--ink-soft); margin-bottom:16px; }
+.ceremony-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 8px; border-radius:5px; font-size:11px; font-weight:650; white-space:nowrap; }
+.ceremony-is-live { background:var(--signal-tint); color:var(--signal); }
+.ceremony-is-next { background:var(--brand-tint); color:var(--brand-mid); }
+.ceremony-is-completed { background:var(--good-tint); color:var(--good); }
+.ceremony-is-pending { background:var(--surface-2); color:var(--ink-soft); }
+.ceremony-current h2 { font-size:28px; line-height:1.2; margin:0 0 10px; }
+.ceremony-responsible { font-size:16px; color:var(--ink-soft); margin:5px 0 10px; }
+.ceremony-planned { font-size:14px; margin:12px 0 0; }
+.ceremony-planned > span { display:block; margin-top:3px; font-size:13px; color:var(--ink-soft); }
+.ceremony-real { font-size:12px; color:var(--ink-soft); margin:6px 0 0; }
+.ceremony-songs { border-top:1px solid var(--mist); margin-top:18px; padding-top:14px; }
+.ceremony-songs h3 { display:flex; align-items:center; gap:8px; font-size:14px; margin-bottom:10px; }
+.ceremony-songs .ui-icon { width:18px; height:18px; }
+.ceremony-songs ul { margin:0; padding-left:20px; }
+.ceremony-songs li { padding:4px 0; font-size:14px; overflow-wrap:anywhere; }
+.ceremony-next { background:var(--brand-tint); border-color:#cde4ef; }
+.ceremony-next > time { display:block; font-size:20px; font-weight:650; margin:12px 0 6px; color:var(--brand); }
+.ceremony-next h2 { font-size:20px; margin:0 0 8px; line-height:1.3; }
+.ceremony-next .ceremony-responsible { font-size:14px; }
+.ceremony-after { margin-top:16px; padding-top:14px; border-top:1px solid var(--mist-strong); }
+.ceremony-after h3 { font-size:12px; color:var(--ink-soft); }
+.ceremony-after p { font-size:12px; margin:8px 0 0; }
+.ceremony-after time { display:inline-block; margin-right:8px; font-variant-numeric:tabular-nums; }
+.ceremony-timeline > h2 { font-size:18px; margin:4px 0 12px; }
+.ceremony-section > h3 { font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--brand); padding:10px 12px; border-radius:6px; background:var(--surface-2); margin:18px 0 10px; }
+.ceremony-section:first-of-type > h3 { margin-top:0; }
+.ceremony-item { display:flex; align-items:flex-start; gap:8px; padding:12px 12px 12px 6px; border:1px solid var(--mist); border-radius:10px; background:var(--surface); margin-bottom:10px; }
+.ceremony-item.is-checked { background:var(--good-tint); border-color:#b8d8c8; }
+.ceremony-item-next { border-left:3px solid var(--brand-mid); }
+.ceremony-item-live { box-shadow:inset 3px 0 var(--brand-mid); }
+.ceremony-check { display:flex; align-items:center; justify-content:center; min-width:44px; min-height:48px; cursor:pointer; }
+.ceremony-check input[type="checkbox"] { width:26px; height:26px; min-height:26px; accent-color:var(--good); }
+.ceremony-item details { flex:1; min-width:0; }
+.ceremony-item summary { cursor:pointer; list-style:none; min-height:48px; }
+.ceremony-item summary::-webkit-details-marker { display:none; }
+.ceremony-item-top { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px; margin-bottom:7px; }
+.ceremony-item-top time { font-size:14px; font-variant-numeric:tabular-nums; }
+.ceremony-item h4 { font-size:16px; font-weight:600; line-height:1.35; margin:0; overflow-wrap:anywhere; }
+.ceremony-item .ceremony-responsible { font-size:14px; margin:6px 0 0; }
+.ceremony-media-hint { display:flex; align-items:center; gap:7px; color:var(--ink-soft); font-size:12px; margin-top:8px; overflow-wrap:anywhere; }
+.ceremony-media-hint .ui-icon { width:16px; height:16px; }
+.ceremony-expand { display:flex; align-items:center; gap:7px; color:var(--brand-mid); font-size:12px; margin-top:10px; min-height:26px; }
+.ceremony-expand .ui-icon { width:14px; height:14px; }
+.ceremony-item details[open] .ceremony-expand { display:none; }
+.ceremony-item-details { border-top:1px solid var(--mist); padding-top:12px; margin-top:12px; }
+.ceremony-type { font-size:12px; color:var(--ink-soft); }
+.ceremony-item-details .ceremony-planned { font-size:12px; margin:6px 0; }
+.ceremony-media { display:flex; gap:8px; font-size:13px; margin-top:14px; }
+.ceremony-media strong,.ceremony-note strong { font-size:12px; color:var(--ink-soft); }
+.ceremony-media p,.ceremony-note p { margin:4px 0 0; font-size:14px; white-space:pre-wrap; overflow-wrap:anywhere; }
+.ceremony-note { margin-top:14px; }
+.ceremony-check-note { display:block; color:var(--good); font-size:12px; margin-top:7px; }
+.ceremony-empty h2 { font-size:20px; }
+.ceremony-empty p { font-size:14px; color:var(--ink-soft); margin-bottom:0; }
+.ceremony-empty .btn { margin-top:18px; }
+.ceremony-mobile .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+@media(min-width:900px){
+ .ceremony-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); align-items:start; gap:24px; }
+ .ceremony-follow { position:sticky; top:18px; }
+}
+@media(max-width:899px){
+ .ceremony-mobile #navigation { display:none; }
+ body.ceremony-mobile { padding-left:0; }
+ .ceremony-mobile .v2-main { max-width:680px; padding:14px 16px 24px; }
+ .ceremony-mobile header.v2-header { padding:10px 16px; min-height:86px; flex-wrap:nowrap; }
+ .ceremony-brand > span { font-size:11px; }
+ .ceremony-brand h1 { font-size:21px; }
+ .ceremony-brand p { font-size:11px; margin-top:4px; }
+ .ceremony-header-actions { gap:4px; }
+ .ceremony-header-actions .ceremony-badge { font-size:10px; padding:4px 7px; }
+ .ceremony-mobile .storage-mode { font-size:10px; margin-bottom:8px; }
+ .ceremony-mobile .v2-card { padding:18px; }
+ .ceremony-mobile .checklist-progress { padding:14px 16px; }
+ .ceremony-context { font-size:11px; }
+ .ceremony-current h2 { font-size:27px; }
+}
+/* A posição da consulta é preservada pelo controlador entre snapshots. */
+body.ceremony-mobile { overflow-anchor:none; }

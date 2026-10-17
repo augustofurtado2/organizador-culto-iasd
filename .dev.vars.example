@@ -1,0 +1,8 @@
+# Copiar valores para .dev.vars local ou configurar no painel Cloudflare.
+# Não versionar .dev.vars com segredos reais.
+PERSISTENCE_PROVIDER=jsonbin
+SUPABASE_URL=
+SUPABASE_SECRET_KEY=
+# Rollback temporário: usados somente quando PERSISTENCE_PROVIDER=jsonbin.
+JB_KEY=
+JB_BIN_ID=6a076f2fadc21f119aa6cc4b
