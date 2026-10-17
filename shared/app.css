@@ -339,3 +339,9 @@ header.v2-header { min-height:72px; padding:14px 26px 14px 44px; background:line
  .header-context { flex-basis:100%; justify-content:space-between; }
  #header-date { white-space:nowrap; flex:1; }
 }
+/* Arrastar e soltar no editor */
+.moment-row[draggable] { cursor:grab; }
+.drag-handle { cursor:grab; color:var(--ink-faint); padding:0 2px; user-select:none; }
+.is-dragging { opacity:.4; }
+.drop-before { box-shadow:inset 0 2px 0 var(--brand-mid); }
+.drop-after { box-shadow:inset 0 -2px 0 var(--brand-mid); }

@@ -66,6 +66,31 @@ export function newItem(section = 'culto') {
 export function newCulto(date = '') {
   return { id: uid(), title: 'Culto de Adoração', date, status: 'planned', timingMode:'continuous', startTime: '09:30', sabbathStartTime: '11:15', elder: '', ceremonyLead: '', soundTeam: [], notes: '', items: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
 }
+// Modelo base do "Novo culto": liturgia de 17/10/2026 sem nomes nem músicas.
+const BASE_ITEMS = [
+  ['culto','welcome','Boas-vindas',2],
+  ['culto','worship','Louvor inicial',10,{songs:['Louvor 1','Louvor 2','Louvor 3']}],
+  ['culto','offering','Ofertório',5,{mediaType:'video',mediaTitle:'Provai e Vede',note:'Música instrumental branca após o vídeo'}],
+  ['culto','special_music','Mensagem musical',3],
+  ['culto','children','Adoração Infantil',5],
+  ['culto','worship','Louvor',20,{songs:['Louvor 4','Louvor 5']}],
+  ['culto','sermon','Sermão',35],
+  ['culto','worship','Música final e momento de apelo',5,{mediaType:'video'}],
+  ['culto','prayer','Oração final',1],
+  ['culto','information','Informativo Mundial das Missões',4,{mediaType:'video',mediaTitle:'Informativo Mundial das Missões'}],
+  ['culto','transition','Transição para a Escola Sabatina',5],
+  ['ss','school','Início da Escola Sabatina / Divisão em classes',55],
+  ['ss','closing','Encerramento da Escola Sabatina',null],
+];
+export function baseCulto(date = '') {
+  const c = newCulto(date);
+  c.sabbathStartTime = '11:05';
+  c.items = BASE_ITEMS.map(([section,type,label,duration,extra={}]) => {
+    const { songs = [], ...rest } = extra;
+    return { ...newItem(section), type, label, duration, ...rest, hasSongs: songs.length > 0, songs: songs.map(title => ({ id: uid(), songId: null, title, reference: '' })) };
+  });
+  return c;
+}
 function hash(value) { let h = 2166136261; for (const c of value) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return (h >>> 0).toString(36); }
 export function normalizeLegacyData(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Formato de dados inválido.');

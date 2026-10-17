@@ -1,4 +1,4 @@
-import { newCulto, newItem, newSection, computeTimes, TYPES, MEDIA_TYPES, getSections, timingMode, sectionSchedule, songTitle, songLabel, clone, validateCulto, uid } from './culto.js';
+import { baseCulto, newItem, newSection, computeTimes, TYPES, MEDIA_TYPES, getSections, timingMode, sectionSchedule, songTitle, songLabel, clone, validateCulto, uid } from './culto.js';
 import { loadCollection, saveCulto, duplicateCulto } from './storage.js';
 import { $, esc, href, message, selection, badge, icon, updateCultoHeader } from './ui.js';
 import { openPicker } from './music.js';
@@ -9,7 +9,7 @@ export async function editorPage() {
   if(!id&&!params.has('new')){$('#content').innerHTML=selection(db,'programacao.html','Selecione uma programação ou crie um culto.');return;}
   const existing=id?db.cultos.find(c=>c.id===id||c.legacyId===id):null;
   if(id&&!existing){$('#content').innerHTML=selection(db,'programacao.html','Culto não encontrado.');return;}
-  let draft=existing?clone(existing):newCulto(localDate()),saved=!!existing,revision=db.revision;
+  let draft=existing?clone(existing):baseCulto(localDate()),saved=!!existing,revision=db.revision;
   function materialize(){draft.timingMode=timingMode(draft);draft.sections=getSections(draft).map((s,position)=>({...s,id:s.id||uid(),position}));}
   materialize();
   let selectedId=matchMedia('(min-width:1200px)').matches?draft.items[0]?.id||null:null;
@@ -53,12 +53,54 @@ export async function editorPage() {
       else if(e.target.matches('[data-item-field="enabled"],[data-item-field="hasSongs"]'))drawItems();
     });
     $('#editor-form').addEventListener('click',handleClick);$('#editor-form').addEventListener('submit',save);
+    bindDrag($('#editor-form'));
+  }
+  // Arrastar e soltar: momentos (inclusive entre seções) e músicas do momento aberto.
+  let drag=null;
+  function bindDrag(form){
+    const clear=()=>form.querySelectorAll('.drop-before,.drop-after,.is-dragging').forEach(el=>el.classList.remove('drop-before','drop-after','is-dragging'));
+    const target=e=>{
+      if(drag?.kind==='row'){const row=e.target.closest('[data-row]');if(row)return row;return e.target.closest('.editor-items');}
+      if(drag?.kind==='song')return e.target.closest('[data-song]');
+    };
+    form.addEventListener('dragstart',e=>{
+      const row=e.target.closest?.('[data-row]'),song=e.target.closest?.('.drag-handle')&&e.target.closest('[data-song]');
+      if(song){drag={kind:'song',pos:+song.dataset.song};e.dataTransfer.setDragImage(song,10,10);song.classList.add('is-dragging');}
+      else if(row){drag={kind:'row',id:row.dataset.row};row.classList.add('is-dragging');}
+      else return;
+      e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','');
+    });
+    form.addEventListener('dragover',e=>{
+      const t=drag&&target(e);if(!t)return;e.preventDefault();
+      form.querySelectorAll('.drop-before,.drop-after').forEach(el=>el.classList.remove('drop-before','drop-after'));
+      if(t.classList.contains('editor-items'))return;
+      const r=t.getBoundingClientRect();t.classList.add(e.clientY<r.top+r.height/2?'drop-before':'drop-after');
+    });
+    form.addEventListener('drop',e=>{
+      const t=drag&&target(e);if(!t){clear();return;}e.preventDefault();
+      const before=t.classList.contains('drop-before');
+      if(drag.kind==='row'){
+        const item=draft.items.find(i=>i.id===drag.id);
+        if(t.dataset.row!==drag.id){
+          draft.items.splice(draft.items.indexOf(item),1);
+          if(t.dataset.row){const other=draft.items.find(i=>i.id===t.dataset.row);item.section=other.section;draft.items.splice(draft.items.indexOf(other)+(before?0:1),0,item);}
+          else{item.section=t.id.slice('items-'.length);draft.items.push(item);}
+          item.sectionId=(draft.sections||[]).find(s=>s.type===item.section)?.id;
+          mark();
+        }
+      }else{
+        const item=draft.items.find(i=>i.id===selectedId),to=+t.dataset.song,from=drag.pos;
+        if(item&&to!==from){const [song]=item.songs.splice(from,1);let at=to+(before?0:1);if(from<at)at--;item.songs.splice(at,0,song);mark();}
+      }
+      drag=null;clear();drawItems();
+    });
+    form.addEventListener('dragend',()=>{drag=null;clear();});
   }
   function drawTeam(){
     $('#team-list').innerHTML=draft.soundTeam.map((person,index)=>`<div class="team-editor" data-team="${index}"><label>Função<input data-team-field="role" value="${esc(person.role||'')}" placeholder="Sonoplastia"></label><label>Responsável<input data-team-field="nome" value="${esc(person.nome||'')}"></label><button type="button" class="btn btn-danger" data-action="team-remove" data-index="${index}">Remover</button></div>`).join('')||'<p class="muted">Nenhum responsável adicionado.</p>';
   }
   function rowMarkup(i,index){
-    return `<div class="moment-row ${i.enabled?'':'is-disabled'} ${i.id===selectedId?'is-selected':''}" data-row="${esc(i.id)}"><span class="moment-number">${index+1}</span><span class="moment-time" id="time-${esc(i.id)}">${esc(i.computedTime||'—')}</span><span>${i.duration==null?'—':i.duration+' min'}</span><button type="button" class="moment-name" aria-pressed="${i.id===selectedId}" data-action="select" data-select="${esc(i.id)}">${icon(i.hasSongs?'music':'list')}<span>${esc(i.label)}</span></button><span class="moment-responsible">${esc(i.responsible||'—')}</span><span class="moment-type type-${Object.hasOwn(TYPES,i.type)?i.type:'other'}">${esc(TYPES[i.type]||i.type)}</span><button type="button" class="btn btn-ghost moment-edit" data-action="select" data-select="${esc(i.id)}" aria-label="Editar ${esc(i.label)}">${icon('edit')}</button></div>`;
+    return `<div class="moment-row ${i.enabled?'':'is-disabled'} ${i.id===selectedId?'is-selected':''}" data-row="${esc(i.id)}" draggable="true" title="Arraste para reordenar"><span class="moment-number">${index+1}</span><span class="moment-time" id="time-${esc(i.id)}">${esc(i.computedTime||'—')}</span><span>${i.duration==null?'—':i.duration+' min'}</span><button type="button" class="moment-name" aria-pressed="${i.id===selectedId}" data-action="select" data-select="${esc(i.id)}">${icon(i.hasSongs?'music':'list')}<span>${esc(i.label)}</span></button><span class="moment-responsible">${esc(i.responsible||'—')}</span><span class="moment-type type-${Object.hasOwn(TYPES,i.type)?i.type:'other'}">${esc(TYPES[i.type]||i.type)}</span><button type="button" class="btn btn-ghost moment-edit" data-action="select" data-select="${esc(i.id)}" aria-label="Editar ${esc(i.label)}">${icon('edit')}</button></div>`;
   }
   function drawRows(){
     computeTimes(draft);
@@ -75,7 +117,7 @@ export async function editorPage() {
     document.querySelector('.program-workspace').classList.toggle('panel-open',!!i);
     if(!i){panel.innerHTML='<div class="panel-placeholder">Selecione um momento para editar.</div>';return;}
     const items=draft.items.filter(item=>item.section===i.section),index=items.indexOf(i);
-    panel.innerHTML=`<article class="editor-moment ${i.enabled?'':'is-disabled'}" data-item="${esc(i.id)}"><div class="section-heading"><h2 id="moment-panel-title">Editar momento</h2><button type="button" class="btn btn-ghost panel-close" data-action="close" aria-label="Fechar edição">×</button><span class="time-badge" data-panel-time>${esc(i.computedTime||(!i.enabled?'Desabilitado':'Aguardando duração anterior'))}</span><span class="muted">Momento ${index+1}</span><label class="check-control"><input data-item-field="enabled" type="checkbox" ${i.enabled?'checked':''}> Habilitado</label><div class="order-controls"><button type="button" class="btn btn-ghost" data-action="up" ${index===0?'disabled':''} aria-label="Subir momento">↑</button><button type="button" class="btn btn-ghost" data-action="down" ${index===items.length-1?'disabled':''} aria-label="Descer momento">↓</button><button type="button" class="btn btn-danger" data-action="remove">Excluir momento</button></div></div><div class="form-grid"><label class="v2-field">Nome do momento<input data-item-field="label" value="${esc(i.label)}" required></label><label class="v2-field">Tipo<select data-item-field="type">${Object.entries(TYPES).map(([type,label])=>`<option value="${type}" ${i.type===type?'selected':''}>${esc(label)}</option>`).join('')}${!Object.hasOwn(TYPES,i.type)?`<option selected value="${esc(i.type)}">${esc(i.type)}</option>`:''}</select></label><label class="v2-field">Responsável (opcional)<input data-item-field="responsible" value="${esc(i.responsible)}"></label><label class="v2-field">Duração em minutos (opcional)<input data-item-field="duration" type="number" min="0" max="999" step="1" value="${i.duration??''}" placeholder="Não definida"></label><label class="v2-field">Mídia<select data-item-field="mediaType">${Object.entries(MEDIA_TYPES).map(([type,label])=>`<option value="${type}" ${(i.mediaType||'none')===type?'selected':''}>${label}</option>`).join('')}</select></label><label class="v2-field" data-media-title-field ${(i.mediaType||'none')==='none'?'hidden':''}>Nome da mídia (opcional)<input data-item-field="mediaTitle" value="${esc(i.mediaTitle||'')}"></label></div><label class="v2-field">Observação<input data-item-field="note" value="${esc(i.note)}"></label><label class="check-control"><input data-item-field="hasSongs" type="checkbox" ${i.hasSongs?'checked':''}> Este momento possui músicas</label>${i.hasSongs?`<div class="editor-songs"><h3>Músicas selecionadas</h3>${i.songs.length?`<ol>${i.songs.map((song,index)=>`<li><div class="song-editor" data-song="${index}"><span data-song-label>${esc(songLabel(song))}</span><button type="button" class="btn btn-ghost" data-action="song-up" ${index===0?'disabled':''} aria-label="Subir música">↑</button><button type="button" class="btn btn-ghost" data-action="song-down" ${index===i.songs.length-1?'disabled':''} aria-label="Descer música">↓</button><button type="button" class="btn btn-danger" data-action="song-remove">Remover</button><label class="song-reference-field">Referência opcional<input data-song-field="reference" value="${esc(typeof song==='object'?song.reference||'':'')}" placeholder="Nº do hinário ou CD"></label></div></li>`).join('')}</ol>`:'<p class="muted">Nenhuma música selecionada.</p>'}<button type="button" class="btn btn-secondary" data-action="music">+ Adicionar música</button></div>`:''}<button type="submit" class="btn btn-primary panel-save">Salvar culto</button></article>`;
+    panel.innerHTML=`<article class="editor-moment ${i.enabled?'':'is-disabled'}" data-item="${esc(i.id)}"><div class="section-heading"><h2 id="moment-panel-title">Editar momento</h2><button type="button" class="btn btn-ghost panel-close" data-action="close" aria-label="Fechar edição">×</button><span class="time-badge" data-panel-time>${esc(i.computedTime||(!i.enabled?'Desabilitado':'Aguardando duração anterior'))}</span><span class="muted">Momento ${index+1}</span><label class="check-control"><input data-item-field="enabled" type="checkbox" ${i.enabled?'checked':''}> Habilitado</label><div class="order-controls"><button type="button" class="btn btn-ghost" data-action="up" ${index===0?'disabled':''} aria-label="Subir momento">↑</button><button type="button" class="btn btn-ghost" data-action="down" ${index===items.length-1?'disabled':''} aria-label="Descer momento">↓</button><button type="button" class="btn btn-danger" data-action="remove">Excluir momento</button></div></div><div class="form-grid"><label class="v2-field">Nome do momento<input data-item-field="label" value="${esc(i.label)}" required></label><label class="v2-field">Tipo<select data-item-field="type">${Object.entries(TYPES).map(([type,label])=>`<option value="${type}" ${i.type===type?'selected':''}>${esc(label)}</option>`).join('')}${!Object.hasOwn(TYPES,i.type)?`<option selected value="${esc(i.type)}">${esc(i.type)}</option>`:''}</select></label><label class="v2-field">Responsável (opcional)<input data-item-field="responsible" value="${esc(i.responsible)}"></label><label class="v2-field">Duração em minutos (opcional)<input data-item-field="duration" type="number" min="0" max="999" step="1" value="${i.duration??''}" placeholder="Não definida"></label><label class="v2-field">Mídia<select data-item-field="mediaType">${Object.entries(MEDIA_TYPES).map(([type,label])=>`<option value="${type}" ${(i.mediaType||'none')===type?'selected':''}>${label}</option>`).join('')}</select></label><label class="v2-field" data-media-title-field ${(i.mediaType||'none')==='none'?'hidden':''}>Nome da mídia (opcional)<input data-item-field="mediaTitle" value="${esc(i.mediaTitle||'')}"></label></div><label class="v2-field">Observação<input data-item-field="note" value="${esc(i.note)}"></label><label class="check-control"><input data-item-field="hasSongs" type="checkbox" ${i.hasSongs?'checked':''}> Este momento possui músicas</label>${i.hasSongs?`<div class="editor-songs"><h3>Músicas selecionadas</h3>${i.songs.length?`<ol>${i.songs.map((song,index)=>`<li><div class="song-editor" data-song="${index}"><span class="drag-handle" draggable="true" title="Arraste para reordenar" aria-hidden="true">⠿</span><span data-song-label>${esc(songLabel(song))}</span><button type="button" class="btn btn-ghost" data-action="song-up" ${index===0?'disabled':''} aria-label="Subir música">↑</button><button type="button" class="btn btn-ghost" data-action="song-down" ${index===i.songs.length-1?'disabled':''} aria-label="Descer música">↓</button><button type="button" class="btn btn-danger" data-action="song-remove">Remover</button><label class="song-reference-field">Referência opcional<input data-song-field="reference" value="${esc(typeof song==='object'?song.reference||'':'')}" placeholder="Nº do hinário ou CD"></label></div></li>`).join('')}</ol>`:'<p class="muted">Nenhuma música selecionada.</p>'}<button type="button" class="btn btn-secondary" data-action="music">+ Adicionar música</button></div>`:''}<button type="submit" class="btn btn-primary panel-save">Salvar culto</button></article>`;
   }
   function handleInput(e){
     const input=e.target;
