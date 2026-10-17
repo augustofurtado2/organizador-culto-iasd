@@ -52,12 +52,12 @@ try{
  assert.equal(await b.eval('document.querySelectorAll(".selected-songs li").length'),5);assert.ok(await b.eval('document.body.innerText.includes("Provai e Vede")'));assert.ok(await b.eval('document.body.innerText.includes("Música instrumental após o vídeo")'));assert.ok(!await b.eval('document.body.innerText.includes("Responsável não definido")'));
  await b.go('cerimonial.html?id='+id);await b.wait('!!document.querySelector("#check-count")');assert.equal(await b.eval('document.querySelector("#check-count").textContent'),'0 de 13');
  await a.go('ao-vivo.html?id='+id);await a.wait('!!document.querySelector("[data-live=start]")');await a.click('[data-live="start"]');await a.wait('document.querySelector(".live-focus h2")?.textContent==="Boas-vindas"');
- await c.go('timer-culto.html');await c.wait('document.querySelector(".stage-display h1")?.textContent==="Boas-vindas"');assert.equal(await c.eval('document.querySelector(".stage-responsible").textContent'),'Decio');
+ await c.go('timer-culto.html');await c.wait('document.querySelector(".stage-title")?.textContent==="Boas-vindas"');assert.equal(await c.eval('document.querySelector(".stage-who").textContent'),'Decio');
  for(let n=1;n<=10;n++){await a.click('[data-live="next"]');await a.wait(`document.querySelector('.live-focus h2')?.textContent===${JSON.stringify(fixture.items[n].label)}`);}
- await c.wait(`document.querySelector('.stage-display h1')?.textContent===${JSON.stringify(fixture.items[10].label)}`);
- assert.equal(await c.eval('!!document.querySelector(".stage-responsible")'),false);
+ await c.wait(`document.querySelector('.stage-title')?.textContent===${JSON.stringify(fixture.items[10].label)}`);
+ assert.equal(await c.eval('!!document.querySelector(".stage-who")'),false);
  await a.click('[data-live="next"]');await a.wait(`document.querySelector('.live-focus h2')?.textContent===${JSON.stringify(fixture.items[11].label)}`);
- await a.click('[data-live="next"]');await c.wait('document.querySelector(".stage-display h1")?.textContent==="Encerramento da Escola Sabatina"');assert.equal(await c.eval('document.querySelector("[data-remaining]").textContent'),'—:—');assert.equal(await c.eval('document.querySelector(".stage-caption").textContent'),'Duração não definida');
+ await a.click('[data-live="next"]');await c.wait('document.querySelector(".stage-title")?.textContent==="Encerramento da Escola Sabatina"');assert.equal(await c.eval('document.querySelector("[data-stage-timer]").textContent'),'—:—');assert.equal(await c.eval('document.querySelector(".stage-caption").textContent'),'Duração não definida');
  await a.eval('window.confirm=()=>true');await a.click('[data-live="finish"]');await a.wait('document.body.innerText.includes("Culto finalizado")');
  await a.go('programacoes.html');await a.wait('!!document.querySelector("[data-action=duplicate]")');await a.click(`[data-action="duplicate"][data-id="${id}"]`);await a.wait('!!document.querySelector("#editor-form")');assert.equal(await a.eval('document.querySelector("[name=date]").value'),'2026-10-17');assert.equal(await a.eval('document.querySelectorAll(".moment-row").length'),13);
  for(const width of [375,768,1440]){

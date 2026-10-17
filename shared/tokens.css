@@ -37,6 +37,19 @@
   --blue-deep: var(--brand); --blue-mid: var(--brand-mid); --blue-light: var(--brand-tint);
   --blue-xlight: var(--paper); --border: var(--mist); --text-main: var(--ink); --text-muted: var(--ink-soft);
 }
+/* Tela de palco ao vivo (timer-culto.html): leitura à distância sobre azul-marinho. */
+:root {
+  --live-bg: #041627;
+  --live-surface: rgb(255 255 255 / 5%);
+  --live-line: rgb(255 255 255 / 14%);
+  --live-text: #f7f9fc;
+  --live-muted: #a9bed0;
+  --live-timer: #f6c86e;
+  --live-warn: #ff9f45;
+  --live-danger: #ff5b61;
+  --live-ok: #3fd896;
+  --live-progress: var(--live-timer);
+}
 :root[data-theme="dark"] {
   --paper: #081b2c; --surface: #102a40; --surface-2: #18374e;
   --ink: #f7f9fc; --ink-soft: #c1d0df; --ink-faint: #a9bed0;

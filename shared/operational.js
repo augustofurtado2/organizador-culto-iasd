@@ -1,5 +1,6 @@
 import { ceremonyPage } from './ceremony.js';
 import { liveScreen, liveTimeline, liveEmpty } from './live-screen.js';
+import { stageScreen, stageEmpty, stageTick, stageSync } from './stage-screen.js';
 import { enabledItems, liveView, countdown } from './culto.js';
 import { saveLiveState, setChecklist, isLocal } from './storage.js';
 import { subscribe } from './live-sync.js';
@@ -27,13 +28,14 @@ export function operationalPage(mode) {
     }
     if(!selected) {
       const text=explicitId ? 'Culto não encontrado.' : mode==='stage' ? 'Nenhum culto em andamento.' : mode==='sound' ? 'Aguardando início do culto.' : mode==='ceremony' ? 'Nenhum culto selecionado.' : 'Nenhum culto ao vivo. Selecione uma programação.';
-      $('#content').innerHTML=mode==='stage' ? `<div class="stage-empty">${esc(text)}</div>` : selection(db,page,text);return;
+      if(mode==='stage'){$('#content').innerHTML=stageEmpty();stageSync(connectionState);return;}
+      $('#content').innerHTML=selection(db,page,text);return;
     }
     updateCultoHeader(selected);
     const view=liveView(db,selected);
     if(mode==='stage') {
-      $('#content').innerHTML=view ? `<div class="stage-clock" data-clock></div><section class="stage-display"><span class="eyebrow">AGORA</span><h1>${esc(view.active.label)}</h1><p class="stage-planned">Previsto: ${esc(view.active.computedTime)} · ${durationLabel(view.active)}</p><div class="stage-countdown" data-remaining>${countdown(view.remaining)}</div><p class="stage-caption">${view.remaining==null?'Duração não definida':'minutos restantes'}</p>${view.active.responsible?`<p class="stage-responsible">${esc(view.active.responsible)}</p>`:''}<p data-overtime ${view.overtime?'':'hidden'}>Tempo previsto esgotado</p><p class="stage-next">Próximo: <strong>${esc(view.next?.label || 'Último momento')}</strong></p></section>` : `<div class="stage-empty">Nenhum culto em andamento.${explicitId ? `<p>${esc(selected.title)} · ${dateLabel(selected.date)}</p>` : ''}</div>`;
-      tick();return;
+      $('#content').innerHTML=view ? stageScreen(selected,view) : stageEmpty(explicitId?selected:null);
+      stageSync(connectionState);tick();return;
     }
     checked=mode==='ceremony' ? readChecklist(selected) : new Set();
     const all=enabledItems(selected);
@@ -43,7 +45,7 @@ export function operationalPage(mode) {
     tick();
   }
   let connectionState='reconnecting';
-  function updateConnection(state){connectionState=state;const el=$('#live-connection');if(el){el.textContent=({synced:'● Sincronizado',local:'● Local · sincronizado entre abas',polling:'● Atualização periódica',reconnecting:'Reconectando…'})[state]||'Reconectando…';el.dataset.state=state;}}
+  function updateConnection(state){connectionState=state;if(mode==='stage')stageSync(state);const el=$('#live-connection');if(el){el.textContent=({synced:'● Sincronizado',local:'● Local · sincronizado entre abas',polling:'● Atualização periódica',reconnecting:'Reconectando…'})[state]||'Reconectando…';el.dataset.state=state;}}
   const sync=subscribe(render,error=>{
     valid=false;lastSignature='';
     message('Reconectando… '+error.message+' O último estado conhecido permanece visível.',true);
@@ -51,6 +53,7 @@ export function operationalPage(mode) {
     if(!db)$('#content').innerHTML='<p>Aguardando conexão com os dados do culto.</p>';
   },{cultoId:explicitId,checklist:mode==='ceremony',onConnection:updateConnection});
   function tick() {
+    if(mode==='stage'){stageTick(selected&&db?liveView(db,selected):null);return;}
     if(!selected||!db)return;
     const view=liveView(db,selected);if(!view)return;
     for(const el of document.querySelectorAll('[data-remaining]')) { el.textContent=countdown(view.remaining);el.classList.toggle('time-warning',view.overtime); }
@@ -60,6 +63,7 @@ export function operationalPage(mode) {
     for(const el of document.querySelectorAll('[data-clock]'))el.textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   }
   const clock=setInterval(tick,1000);
+  if(mode==='stage')for(const type of ['online','offline'])window.addEventListener(type,()=>stageSync(connectionState));
   window.addEventListener('pagehide',()=>{clearInterval(clock);sync.stop();},{once:true});
   $('#content').addEventListener('click',async e=>{
     if(e.target.closest('[data-refresh]')){sync.refresh();return;}

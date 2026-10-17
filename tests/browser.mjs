@@ -16,7 +16,7 @@ class BrowserTab {
 const a=await new BrowserTab().open(), b=await new BrowserTab().open(), c=await new BrowserTab().open();
 try {
  await a.go('index.html');await a.eval('localStorage.clear()');await a.go('index.html');await a.wait('document.body.innerText.includes("Nenhum culto programado.")');
- await a.go('programacao.html?new=1');await a.wait('!!document.querySelector("#editor-form")');
+ await a.go('programacao.html?new=1');await a.wait('!!document.querySelector("#editor-form")');await a.eval(`(()=>{window.confirm=()=>true;let n=0;while(document.querySelector('.moment-row')&&n++<50){document.querySelector('.moment-row [data-action=select]').click();document.querySelector('[data-action=remove]').click();}return n})()`);
  await a.fill('[name="title"]','Culto de teste A');await a.fill('[name="date"]','2026-10-17');await a.fill('[name="startTime"]','09:00');await a.fill('[name="elder"]','João');
  await a.click('[data-action="add"][data-section="culto"]');await a.fill('[data-item-field="label"]','Abertura');await a.fill('[data-item-field="duration"]','5');
  await a.click('[data-action="add"][data-section="culto"]');await a.fill('.editor-moment:last-child [data-item-field="label"]','Louvor');await a.fill('.editor-moment:last-child [data-item-field="duration"]','15');
@@ -26,17 +26,17 @@ try {
  await a.click('#save-button');await a.wait('document.querySelector("#message").textContent==="Culto salvo."');
  const idA=await a.eval('new URLSearchParams(location.search).get("id")');
  await a.go('programacao.html?id='+idA);await a.wait('!!document.querySelector("#editor-form")');await a.click('.moment-row:last-child [data-action=select]');assert.ok((await a.eval('document.body.innerText')).includes('Tu És Fiel'));
- await a.go('programacao.html?new=1');await a.wait('!!document.querySelector("#editor-form")');await a.fill('[name="title"]','Culto B');await a.fill('[name="date"]','2026-10-24');await a.click('[data-action="add"]');await a.fill('[data-item-field="label"]','Mensagem');await a.click('#save-button');await a.wait('document.querySelector("#message").textContent==="Culto salvo."');const idB=await a.eval('new URLSearchParams(location.search).get("id")');
+ await a.go('programacao.html?new=1');await a.wait('!!document.querySelector("#editor-form")');await a.eval(`(()=>{window.confirm=()=>true;let n=0;while(document.querySelector('.moment-row')&&n++<50){document.querySelector('.moment-row [data-action=select]').click();document.querySelector('[data-action=remove]').click();}return n})()`);await a.fill('[name="title"]','Culto B');await a.fill('[name="date"]','2026-10-24');await a.click('[data-action="add"]');await a.fill('[data-item-field="label"]','Mensagem');await a.click('#save-button');await a.wait('document.querySelector("#message").textContent==="Culto salvo."');const idB=await a.eval('new URLSearchParams(location.search).get("id")');
  await a.go('programacao.html?id='+idA);await a.wait('!!document.querySelector("#editor-form")');await a.fill('[name="elder"]','Maria');await a.click('#save-button');await a.wait('document.querySelector("#message").textContent==="Culto salvo."');assert.equal(await a.eval(`JSON.parse(localStorage.getItem('iasd-cultos-v2')).cultos.find(c=>c.id==='${idB}').elder`),'');
  await a.go('ao-vivo.html?id='+idA);await a.wait('!!document.querySelector("[data-live=start]")');await a.click('[data-live="start"]');await a.wait('document.body.innerText.includes("AGORA")');
  await b.go('sonoplastia.html');await b.wait('document.querySelector(".live-focus h2")?.textContent==="Abertura"');
- await c.go('timer-culto.html');await c.wait('document.querySelector(".stage-display h1")?.textContent==="Abertura"');
- await a.click('[data-live="next"]');await b.wait('document.querySelector(".live-focus h2")?.textContent==="Louvor"');await c.wait('document.querySelector(".stage-display h1")?.textContent==="Louvor"');
+ await c.go('timer-culto.html');await c.wait('document.querySelector(".stage-title")?.textContent==="Abertura"');
+ await a.click('[data-live="next"]');await b.wait('document.querySelector(".live-focus h2")?.textContent==="Louvor"');await c.wait('document.querySelector(".stage-title")?.textContent==="Louvor"');
  await b.go('cerimonial.html?id='+idA);await b.wait('!!document.querySelector("[data-check]")');await b.click('[data-check]');await b.wait('document.querySelector("#check-count")?.textContent==="1 de 2"');
  await b.go('cerimonial.html?id='+idB);await b.wait('document.querySelector("#check-count")?.textContent==="0 de 1"');
  await b.go('cerimonial.html?id='+idA);await b.wait('document.querySelector("#check-count")?.textContent==="1 de 2"');
  // Evitar diálogo interativo apenas no contexto isolado do teste.
- await a.eval('window.confirm=()=>true');await a.click('[data-live="finish"]');await a.wait('document.body.innerText.includes("Culto finalizado")');await c.wait('document.body.innerText.includes("Nenhum culto em andamento.")');
+ await a.eval('window.confirm=()=>true');await a.click('[data-live="finish"]');await a.wait('document.body.innerText.includes("Culto finalizado")');await c.wait('document.body.innerText.includes("Nenhum culto em andamento")');
  await b.go('sonoplastia.html');await b.wait('document.body.innerText.includes("Aguardando início do culto.")');
  const snapshot=await a.eval('JSON.parse(localStorage.getItem("iasd-cultos-v2"))');assert.equal(snapshot.cultos.find(c=>c.id===idA).status,'finished');assert.equal(snapshot.cultos.length,2);
  // Foco, leitura do catálogo e ausência de overflow em três larguras.

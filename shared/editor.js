@@ -1,4 +1,4 @@
-import { baseCulto, newItem, newSection, computeTimes, TYPES, MEDIA_TYPES, getSections, timingMode, sectionSchedule, songTitle, songLabel, clone, validateCulto, uid } from './culto.js';
+import { baseCulto, PEOPLE, newItem, newSection, computeTimes, TYPES, MEDIA_TYPES, getSections, timingMode, sectionSchedule, songTitle, songLabel, clone, validateCulto, uid } from './culto.js';
 import { loadCollection, saveCulto, duplicateCulto } from './storage.js';
 import { $, esc, href, message, selection, badge, icon, updateCultoHeader } from './ui.js';
 import { openPicker } from './music.js';
@@ -24,7 +24,7 @@ export async function editorPage() {
       const active=draft.items.find(i=>i.id===selectedId);if(active&&$('[data-panel-time]'))$('[data-panel-time]').textContent=active.computedTime||'Horário indefinido';
     }catch{/* horário ainda em edição */}
   }
-  function field(label,key,type='text',required=false){return `<label class="v2-field">${label}<input name="${key}" type="${type}" value="${esc(draft[key])}" ${required?'required':''} ${key==='title'?'maxlength="200"':''}></label>`;}
+  function field(label,key,type='text',required=false){const names=PEOPLE[key]||[];return `<label class="v2-field">${label}<input name="${key}" type="${type}" value="${esc(draft[key])}" ${required?'required':''} ${key==='title'?'maxlength="200"':''} ${names.length?`list="people-${key}" autocomplete="off"`:''}>${names.length?`<datalist id="people-${key}">${names.map(n=>`<option value="${esc(n)}">`).join('')}</datalist>`:''}</label>`;}
   function sectionManager(){
     return `<section class="v2-card"><div class="section-heading"><h2>Seções da programação</h2><button type="button" class="btn btn-secondary" data-action="section-add">+ Adicionar seção</button></div>${getSections(draft).map((s,index)=>`<div class="section-editor" data-section-editor="${esc(s.type)}"><label class="v2-field">Nome da seção<input data-section-field="label" value="${esc(s.label)}" required></label><label class="check-control"><input type="checkbox" data-section-field="enabled" ${s.enabled?'checked':''}> Habilitada</label>${draft.timingMode==='independent'?`<label class="v2-field">Início da seção<input type="time" data-section-field="startTime" value="${esc(s.startTime)}" required></label>`:''}<div class="order-controls"><button type="button" class="btn btn-ghost" data-action="section-up" ${index===0?'disabled':''} aria-label="Subir seção">↑</button><button type="button" class="btn btn-ghost" data-action="section-down" ${index===draft.sections.length-1?'disabled':''} aria-label="Descer seção">↓</button><button type="button" class="btn btn-danger" data-action="section-remove" ${draft.sections.length===1?'disabled':''}>Remover seção</button></div></div>`).join('')}</section>`;
   }

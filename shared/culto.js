@@ -66,6 +66,8 @@ export function newItem(section = 'culto') {
 export function newCulto(date = '') {
   return { id: uid(), title: 'Culto de Adoração', date, status: 'planned', timingMode:'continuous', startTime: '09:30', sabbathStartTime: '11:15', elder: '', ceremonyLead: '', soundTeam: [], notes: '', items: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
 }
+// Nomes sugeridos no editor (ainda dá pra digitar outro).
+export const PEOPLE = { elder: [], ceremonyLead: ['Iza', 'Carol', 'Cássia'] };
 // Modelo base do "Novo culto": liturgia de 17/10/2026 sem nomes nem músicas.
 const BASE_ITEMS = [
   ['culto','welcome','Boas-vindas',2],
